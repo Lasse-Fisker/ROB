@@ -16,7 +16,7 @@ def invkin(xyz):
     """
     Python implementation of the the inverse kinematics for the crustcrawler
     Input: xyz position
-    Output: Angels for each joint: q1,q2,q3,q4
+    Output: Angels for each joint: q1,q2,q3,q4,q5
     
     You might adjust parameters (d1,a1,a2,d4).
     The robot model shown in rviz can be adjusted accordingly by editing au_crustcrawler_ax12.urdf
@@ -25,8 +25,8 @@ def invkin(xyz):
     d1 = 16.8; # cm (height of 2nd joint)
     a1 = 0.0; # (distance along "y-axis" to 2nd joint)
     a2 = 17.31; # (distance between 2nd and 3rd joints)
-    d4 = 23.5; # (distance from 3rd joint to gripper center - all inclusive, ie. also 4th joint)
-
+    d4 = 20; # (distance from 3rd joint to gripper center - all inclusive, ie. also 4th joint)
+    
     x1 = xyz[0]
     y1 = xyz[1]
     z1 = xyz[2]
@@ -37,11 +37,11 @@ def invkin(xyz):
     r2 = math.pow((x1 - a1 * math.cos(q1)),2) + math.pow((y1 - a1 * math.sin(q1)),2)
     s = (z1 - d1)
     D = (r2 + math.pow(s,2) - math.pow(a2,2) - math.pow(d4,2)) / (2 * a2 * d4)
-
+    
     q3 = math.atan2(-math.sqrt(1 - math.pow(D,2)), D)
     q2 = math.atan2(s, math.sqrt(r2)) - math.atan2(d4 * math.sin(q3), a2 + d4 * math.cos(q3))-(math.pi/2)
 
-    q4 = 0 # not consider rotation so far..
+    #q4 = 0# not consider rotation so far..
     
     print '______________'
     print 'r2 = ' , r2
@@ -50,8 +50,7 @@ def invkin(xyz):
     print 'q1 = ', q1, '::' , ' q2 = ' , q2, '::' , ' q3 = ' , q3
     print '______________'
 
-
-    return q1,q2,q3,q4
+    return q1,q2,q3
 
 class RobotExecute:
 
@@ -61,22 +60,22 @@ class RobotExecute:
 
         self.joint_positions = []
         self.names =["joint1",
-                "joint2",
-                "joint3",
-                "joint4",
-                "gripper"
-                ]
+                        "joint2",
+                        "joint3",
+                        "joint4",
+                        "gripper"
+                        ]
         # the list of xyz points we want to plan
         joint_positions = [
         [angles[0], angles[1], angles[2], 0, gripper]
         ]
         # initial duration
-        dur = rospy.Duration(2)
+        dur = rospy.Duration(1)
 
         # construct a list of joint positions by calling invkin for each xyz point
         for p in joint_positions:
             jtp = JointTrajectoryPoint(positions=p,velocities=[0.5]*self.N_JOINTS ,time_from_start=dur)
-            dur += rospy.Duration(2)
+            dur += rospy.Duration(5)
             self.joint_positions.append(jtp)
 
         self.jt = JointTrajectory(joint_names=self.names, points=self.joint_positions)
@@ -93,33 +92,38 @@ class RobotExecute:
 
 def RobotDo(angles, gripper):
     
-    rospy.init_node("au_dynamixel_test_node")
+    rospy.init_node("InvRobot")
     
-    node= RobotExecute("/arm_controller/follow_joint_trajectory", angles, gripper)
-
+    print 'RobotExecute started: '
+    print '______________________'
+    
+    node = RobotExecute("/arm_controller/follow_joint_trajectory", angles, gripper)
+    
     node.send_command()
 
-def mirrorCube(xy);
+def mirrorCube(xy):
 
     air = 30
-    table = 4
-    Grapped = 0.7
+    table = 6
+    Grapped = 0.8
     NotGrapped = 0
-    top = invkin([0, 0, 54])
+    top = invkin([0, 0, 54.1])
 
     RobotDo(invkin([xy[0], xy[1], air]), NotGrapped)
     time.sleep(2)
     RobotDo(invkin([xy[0], xy[1], table]), NotGrapped)
-    times.leep(2)
+    time.sleep(2)
     RobotDo(invkin([xy[0], xy[1], table]), Grapped)
     time.sleep(2)
     RobotDo(invkin([xy[0], xy[1], air]), Grapped)
     time.sleep(2)
     RobotDo(invkin([xy[0], -xy[1], air]), Grapped)
     time.sleep(2)
-    RobotDo(invkin(xy[0], -xy[1], air], Grapped)
+    RobotDo(invkin([xy[0], -xy[1], table]), Grapped)
     time.sleep(2)
-    RobotDo(invkin(xy[0], -xy[1], table]), NotGrapped)
+    RobotDo(invkin([xy[0], -xy[1], table]), NotGrapped)
     time.sleep(2)
-    RoboDo(top, NotGrapped)
+    RobotDo(invkin([xy[0], -xy[1], air]), NotGrapped)
+    time.sleep(2)
+    RobotDo(top, NotGrapped)
     time.sleep(2)
