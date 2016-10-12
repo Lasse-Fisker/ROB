@@ -11,17 +11,23 @@ from trajectory_msgs.msg import JointTrajectory
 import math
 import time
 
-from invRobot import *
+from InvRobot import *
 
 
 
 def main():
-    mirrorCube([20, 20])
-    
-	
+    mirrorCube([12.3, -14.6])
+    mirrorCube([5.1, -23.4])
+    mirrorCube([24.6, -17.1])
+    mirrorCube([17, -26.3])
+
+    #RobotDo(invkin([10.6, -10, 10]),0)
+    #time.sleep(10)
+    #RobotDo(invkin([0, 0, 54.1]),1)    
+
 
 if __name__ == "__main__":
-	top = invkin([0, 0, 54])
+	top = invkin([0,0, 54.1])          
 	RobotDo(top,0)
 	main()
 
