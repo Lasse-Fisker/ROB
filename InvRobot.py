@@ -55,7 +55,7 @@ def invkin(xyz):
 class RobotExecute:
 
     N_JOINTS = 5
-    def __init__(self,server_name, angles, gripper):
+    def __init__(self,server_name, angles, rotate, gripper):
         self.client = actionlib.SimpleActionClient(server_name, FollowJointTrajectoryAction)
 
         self.joint_positions = []
@@ -67,7 +67,7 @@ class RobotExecute:
                         ]
         # the list of xyz points we want to plan
         joint_positions = [
-        [angles[0], angles[1], angles[2], 0, gripper]
+        [angles[0], angles[1], angles[2], rotate, gripper]
         ]
         # initial duration
         dur = rospy.Duration(1)
@@ -90,39 +90,48 @@ class RobotExecute:
         print self.client.get_result()
 
 
-def RobotDo(angles, gripper):
+def RobotDo(angles, rotate, gripper):
     
     rospy.init_node("InvRobot")
     
     print 'RobotExecute started: '
     print '______________________'
     
-    node = RobotExecute("/arm_controller/follow_joint_trajectory", angles, gripper)
+    node = RobotExecute("/arm_controller/follow_joint_trajectory", angles, rotate, gripper)
     
     node.send_command()
 
 def mirrorCube(xy):
 
-    air = 30
+    air1 = 15
+    air2 = 30
     table = 6
     Grapped = 0.8
     NotGrapped = 0
+    NotRotated = 0
+    Rotated = 1.5
     top = invkin([0, 0, 54.1])
 
-    RobotDo(invkin([xy[0], xy[1], air]), NotGrapped)
+    RobotDo(invkin([xy[0], xy[1], air2]), NotRotated, NotGrapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], xy[1], table]), NotGrapped)
+    RobotDo(invkin([xy[0], xy[1], table]), NotRotated, NotGrapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], xy[1], table]), Grapped)
+    RobotDo(invkin([xy[0], xy[1], table]), NotRotated, Grapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], xy[1], air]), Grapped)
+    RobotDo(invkin([xy[0], xy[1], air1]), Rotated, Grapped)
+    time.sleep(1)
+    RobotDo(invkin([xy[0], xy[1], air2]), Rotated, Grapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], -xy[1], air]), Grapped)
+    RobotDo(invkin([xy[0], -xy[1], air2]), Rotated, Grapped)
+    time.sleep(1)
+     RobotDo(invkin([xy[0], -xy[1], air1]), Rotated, Grapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], -xy[1], table]), Grapped)
+    RobotDo(invkin([xy[0], -xy[1], table]), Rotated, Grapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], -xy[1], table]), NotGrapped)
+    RobotDo(invkin([xy[0], -xy[1], table]), Rotated, NotGrapped)
     time.sleep(2)
-    RobotDo(invkin([xy[0], -xy[1], air]), NotGrapped)
-    RobotDo(top, NotGrapped)
+    RobotDo(invkin([xy[0], -xy[1], air1]), Rotated, NotGrapped)
+    time.sleep(1)
+    RobotDo(invkin([xy[0], -xy[1], air2]), NotRotated, NotGrapped)
+    RobotDo(top, NotRotated, NotGrapped)
     time.sleep(2)
