@@ -124,6 +124,5 @@ def mirrorCube(xy):
     RobotDo(invkin([xy[0], -xy[1], table]), NotGrapped)
     time.sleep(2)
     RobotDo(invkin([xy[0], -xy[1], air]), NotGrapped)
-    time.sleep(2)
     RobotDo(top, NotGrapped)
-    time.sleep(2)(
+    time.sleep(2)

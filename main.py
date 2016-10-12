@@ -18,6 +18,7 @@ from findBricks import *
 
 def main():
     Jobactive = True
+    Job = False 
     while Jobactive == True:
         xy = find_brick_centers()
         if len(xy) > 0:
