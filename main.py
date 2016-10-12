@@ -27,6 +27,7 @@ def main():
         else:
             Jobactive = False
             if Job == True:
+                RobotLowFive()
                 print "Jobs done"
             else:
                 print "There wasnt any job "

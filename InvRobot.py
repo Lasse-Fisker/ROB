@@ -135,3 +135,20 @@ def mirrorCube(xy):
     RobotDo(invkin([xy[0], -xy[1], air2]), NotRotated, NotGrapped)
     RobotDo(top, NotRotated, NotGrapped)
     time.sleep(2)
+
+def RobotLowFive():
+
+    x = 20
+    y = 0
+    z = 40
+    NotGrapped = 0
+    NotRotated = 0
+    top = invkin([0, 0, 54.1])
+    i = 0
+
+    while i < 30:
+        RobotDo(invkin([x, y, z-i]), NotRotated, NotGrapped)
+        i += 2
+        #time.sleep(0.5)
+
+    RobotDo(top, NotRotated, NotGrapped)
