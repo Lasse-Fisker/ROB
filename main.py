@@ -17,12 +17,18 @@ from findBricks import *
 
 
 def main():
-    #xy = find_brick_centers()
-    mirrorCube([20, -20])
-
-    #RobotDo(invkin([10.6, -10, 10]),0)
-    #time.sleep(10)
-    #RobotDo(invkin([0, 0, 54.1]),1)    
+    Jobactive = True
+    while Jobactive == True:
+        xy = find_brick_centers()
+        if len(xy) > 0:
+            mirrorCube(xy)
+            Job = True
+        else:
+            Jobactive = False
+            if Job == True:
+                print "Jobs done"
+            else:
+                print "There wasnt any job "
 
 
 if __name__ == "__main__":
