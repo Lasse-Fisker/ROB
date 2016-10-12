@@ -57,7 +57,7 @@ def contours(image):
     call findContours
     """
     imgray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    contours = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     return contours
 
@@ -152,4 +152,6 @@ def find_brick_centers():
                           
     return centers_cm
 
-#allcenters = find_brick_centers()
+centers = find_brick_centers()
+
+print centers
