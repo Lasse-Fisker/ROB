@@ -111,44 +111,52 @@ def mirrorCube(xy):
     NotRotated = 0
     Rotated = 1.5
     top = invkin([0, 0, 54.1])
+    time1 = 1
+    time2 = 0.5
 
     RobotDo(invkin([xy[0], xy[1], air2]), NotRotated, NotGrapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], xy[1], table]), NotRotated, NotGrapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], xy[1], table]), NotRotated, Grapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], xy[1], air1]), Rotated, Grapped)
-    time.sleep(1)
+    time.sleep(time2)
     RobotDo(invkin([xy[0], xy[1], air2]), Rotated, Grapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], -xy[1], air2]), Rotated, Grapped)
-    time.sleep(1)
+    time.sleep(time2)
     RobotDo(invkin([xy[0], -xy[1], air1]), Rotated, Grapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], -xy[1], table]), NotRotated, Grapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], -xy[1], table]), NotRotated, NotGrapped)
-    time.sleep(2)
+    time.sleep(time1)
     RobotDo(invkin([xy[0], -xy[1], air1]), NotRotated, NotGrapped)
-    time.sleep(1)
+    time.sleep(time2)
     RobotDo(invkin([xy[0], -xy[1], air2]), NotRotated, NotGrapped)
     RobotDo(top, NotRotated, NotGrapped)
     time.sleep(2)
 
 def RobotLowFive():
 
-    x = 20
+    x = 28
     y = 0
     z = 40
     NotGrapped = 0
     NotRotated = 0
+    Rotated = 1.5
     top = invkin([0, 0, 54.1])
-    i = 0
+    i = 0    
 
-    while i < 30:
+    dur = rospy.Duration(1)
+
+    RobotDo(top, Rotated, NotGrapped)
+    time.sleep(0.5)
+    RobotDo(top, NotRotated, NotGrapped)
+
+    while i < 31:
         RobotDo(invkin([x, y, z-i]), NotRotated, NotGrapped)
-        i += 2
-        #time.sleep(0.5)
+        i += 10
 
     RobotDo(top, NotRotated, NotGrapped)

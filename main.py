@@ -35,7 +35,7 @@ def main():
 
 if __name__ == "__main__":
 	top = invkin([0,0, 54.1])          
-	RobotDo(top,0)
+	RobotDo(top,0,0)
 	main()
 
 
