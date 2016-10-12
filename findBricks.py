@@ -151,7 +151,3 @@ def find_brick_centers():
         centers_cm.append(y_koor)
                           
     return centers_cm
-
-centers = find_brick_centers()
-
-print centers

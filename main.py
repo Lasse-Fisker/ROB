@@ -13,14 +13,16 @@ import time
 
 from InvRobot import *
 from findBricks import *
-
+from listener import *
 
 
 def main():
     Jobactive = True
-    Job = False 
+    Job = False
+    listener()
+
     while Jobactive == True:
-        xy = find_brick_centers()
+        xy = getCoordinates()
         if len(xy) > 0:
             mirrorCube(xy)
             Job = True
