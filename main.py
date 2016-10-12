@@ -12,14 +12,13 @@ import math
 import time
 
 from InvRobot import *
+from findBricks import *
 
 
 
 def main():
-    mirrorCube([12.3, -14.6])
-    mirrorCube([5.1, -23.4])
-    mirrorCube([24.6, -17.1])
-    mirrorCube([17, -26.3])
+    #xy = find_brick_centers()
+    mirrorCube([20, -20])
 
     #RobotDo(invkin([10.6, -10, 10]),0)
     #time.sleep(10)
