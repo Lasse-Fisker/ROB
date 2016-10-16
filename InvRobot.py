@@ -43,12 +43,12 @@ def invkin(xyz):
 
     #q4 = 0# not consider rotation so far..
     
-    print '______________'
-    print 'r2 = ' , r2
-    print 's = ' , s
-    print 'D = ' , D
-    print 'q1 = ', q1, '::' , ' q2 = ' , q2, '::' , ' q3 = ' , q3
-    print '______________'
+    #print '______________'
+    #print 'r2 = ' , r2
+    #print 's = ' , s
+    #print 'D = ' , D
+    #print 'q1 = ', q1, '::' , ' q2 = ' , q2, '::' , ' q3 = ' , q3
+    #print '______________'
 
     return q1,q2,q3
 
@@ -83,17 +83,15 @@ class RobotExecute:
 
     def send_command(self):
         self.client.wait_for_server()
-        print self.goal
+        #print self.goal
         self.client.send_goal(self.goal)
 
         self.client.wait_for_result()
-        print self.client.get_result()
+        #print self.client.get_result()
 
 
 def RobotDo(angles, rotate, gripper):
-    
-    rospy.init_node("InvRobot")
-    
+        
     print 'RobotExecute started: '
     print '______________________'
     

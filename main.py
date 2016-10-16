@@ -10,20 +10,38 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from trajectory_msgs.msg import JointTrajectory
 import math
 import time
+from std_msgs.msg import String
 
 from InvRobot import *
 from findBricks import *
-from listener import *
+#from listener import *
+
+visionCoor = []
+
+def getCoordinates(coord):    
+    global visionCoor
+    
+    coord_str = str(coord)
+    coor = coord_str.replace("data: ","")
+    visionCoor = [float(s) for s in coor.split(',')]
+    print "V1"
+    print visionCoor
+    
 
 
 def main():
     Jobactive = True
     Job = False
-    listener()
+    rospy.Subscriber("Coordinates", String, getCoordinates)
 
+    print "V2"
+    print visionCoor
+    
     while Jobactive == True:
-        xy = getCoordinates()
-        if len(xy) > 0:
+        print "V3"
+        print visionCoor
+        xy = visionCoor
+        if xy[0] == 0 and xy[1] == 0:
             mirrorCube(xy)
             Job = True
         else:
@@ -36,9 +54,10 @@ def main():
 
 
 if __name__ == "__main__":
-	top = invkin([0,0, 54.1])          
-	RobotDo(top,0,0)
-	main()
+    rospy.init_node("InvRobot")
+    top = invkin([0,0, 54.1])
+    RobotDo(top,0,0)
+    main()
 
 
 

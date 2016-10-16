@@ -2,17 +2,11 @@
 import rospy
 from std_msgs.msg import String
 
+visionCoor = []
+
 def getCoordinates(coord):    
 
     coord_str = str(coord)
     coor = coord_str.replace("data: ","")
-    xy = [float(s) for s in coor.split(',')]
-    return xy
+    visionCoor = [float(s) for s in coor.split(',')]
     
-def listener():
-
-    rospy.init_node('listener', anonymous=True)
-
-    rospy.Subscriber("Coordinates", String, getCoordinates)
-
-    rospy.spin()
