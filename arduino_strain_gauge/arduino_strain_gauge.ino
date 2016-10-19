@@ -3,8 +3,18 @@
 
 ros::NodeHandle  nh;
 std_msgs::Bool grabbedSomethingMsg;
+
 boolean grabbedSomething = false;
-ros::Publisher grabber_strain_gauge_publisher("grabber_something", &grabbedSomethingMsg);
+boolean shouldCheck = false;
+
+ros::Publisher grabber_strain_gauge_publisher("grabbed_something", &grabbedSomethingMsg);
+int strainGaugePin = A0;
+
+void handleCheckPressureCb(const std_msgs::Bool& msg) {  
+      shouldCheck = msg.data;
+}
+
+ros::Subscriber<std_msgs::Bool> grabber_strain_gauge_subscriber("grabber_check_pressure", &handleCheckPressureCb);
 
 void setup()
 {
@@ -14,17 +24,19 @@ void setup()
 
 void loop()
 {
-  checkStrain();
-  delay(10);
-  nh.spinOnce();
- 
+    if(shouldCheck){
+        checkStrain();
+    }
+    
+    nh.spinOnce();
+  
+    delay(10);
 }
 
 void checkStrain() {
-    //TODO: check how high the strain is
     
-    
-    if(grabbedSomething) {
+    //read pressure, publish if high enough. TODO: test values
+    if(analogRead(strainGaugePin) > 400) {
         publish();
     }
 }
