@@ -30,8 +30,6 @@ def getCoordinates(coord):
         visionCoor = []
         print "VisionCoor"
         print visionCoor
-    
-
 
 def main():
     Jobactive = True
@@ -55,6 +53,7 @@ def main():
 if __name__ == "__main__":
     rospy.init_node("InvRobot")
     rospy.Subscriber("Coordinates", String, getCoordinates)
+    setupGrabberPressureSensor()
 
     top = invkin([0,0, 54.1])
     RobotDo(top,0,0)

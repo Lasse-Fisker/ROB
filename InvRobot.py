@@ -12,6 +12,8 @@ from trajectory_msgs.msg import JointTrajectory
 import math
 import time
 
+grabberPressure = 0;
+
 def invkin(xyz):
     """
     Python implementation of the the inverse kinematics for the crustcrawler
@@ -158,3 +160,15 @@ def RobotLowFive():
         i += 10
 
     RobotDo(top, NotRotated, NotGrapped)
+
+# setup subscriber for pressure sensor
+def setupGrabberPressureSensor()
+    rospy.Subscriber("grabber_pressure", Int, handleReadPressure)
+
+# callback method for pressure sensor
+def handleReadPressure(val) {
+    grabberPressure = val;
+
+    #debug
+    print "grabber pressure is: %d" % val
+}
