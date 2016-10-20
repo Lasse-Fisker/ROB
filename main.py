@@ -24,24 +24,24 @@ def getCoordinates(coord):
     coord_str = str(coord)
     coor = coord_str.replace("data: ","")
     visionCoor = [float(s) for s in coor.split(',')]
-    print "V1"
-    print visionCoor
+    
+    if visionCoor[0] == 0 and visionCoor[1] == 0:
+        print "Nu skal programmet stoppe"
+        visionCoor = []
+        print "VisionCoor"
+        print visionCoor
     
 
 
 def main():
     Jobactive = True
     Job = False
-    rospy.Subscriber("Coordinates", String, getCoordinates)
-
-    print "V2"
-    print visionCoor
     
     while Jobactive == True:
         print "V3"
         print visionCoor
         xy = visionCoor
-        if xy[0] == 0 and xy[1] == 0:
+        if len(xy) > 0:
             mirrorCube(xy)
             Job = True
         else:
@@ -51,10 +51,11 @@ def main():
                 print "Jobs done"
             else:
                 print "There wasnt any job "
-
-
+                
 if __name__ == "__main__":
     rospy.init_node("InvRobot")
+    rospy.Subscriber("Coordinates", String, getCoordinates)
+
     top = invkin([0,0, 54.1])
     RobotDo(top,0,0)
     main()

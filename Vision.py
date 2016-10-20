@@ -5,15 +5,24 @@ from findBricks import *
 from std_msgs.msg import String
 
 def VisionPublisher():
+    
     pub = rospy.Publisher('Coordinates', String, queue_size=10)
     rospy.init_node('VisionPublisher', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(1) # 10hz
     while not rospy.is_shutdown():
-        bricks = find_brick_centers()
-        while i > 0:
-            coords_str = "%f,%f"%(bricks[0], bricks[1])
+        try:
+            bricks = find_brick_centers()
             
-        pub.publish(test_data)
+            if len(bricks) != 0:        
+                coords_str = "%f,%f"%(bricks[0], bricks[1])
+            else:
+                coords_str = "%f,%f"%(0, 0)          
+            pub.publish(coords_str)
+            
+            print("Test af coords_str")
+            print(coords_str)
+        except:
+            print "Error"
         rate.sleep()
 
 if __name__ == '__main__':
