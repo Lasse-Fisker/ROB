@@ -81,7 +81,7 @@ class RobotExecute:
         # construct a list of joint positions
         for p in joint_positions:
             jtp = JointTrajectoryPoint(positions=p,velocities=[0.5]*self.N_JOINTS, time_from_start=dur)
-            dur += rospy.Duration[5]
+            dur += rospy.Duration(5)
             self.joint_positions.append(jtp)
         
         # create joint trajectory
