@@ -11,6 +11,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from trajectory_msgs.msg import JointTrajectory
 import math
 import time
+from std_msgs.msg import Int32
 
 grabberPressure = 0;
 
@@ -162,13 +163,12 @@ def RobotLowFive():
     RobotDo(top, NotRotated, NotGrapped)
 
 # setup subscriber for pressure sensor
-def setupGrabberPressureSensor()
-    rospy.Subscriber("grabber_pressure", Int, handleReadPressure)
+def setupGrabberPressureSensor():
+    rospy.Subscriber("grabber_pressure", Int32, handleReadPressure)
 
 # callback method for pressure sensor
-def handleReadPressure(val) {
-    grabberPressure = val;
+def handleReadPressure(val):
+    grabberPressure = val
 
     #debug
-    print "grabber pressure is: %d" % val
-}
+    print "grabber pressure is: %d" % val.data
