@@ -1,0 +1,48 @@
+\chapter{Metode}\label{chap:Metode}
+
+%%%%%%%%%% Vision system %%%%%%%%%%
+\section{Vision system}
+Overordnet beskrivelse af vision systemet.
+
+%%%%% MATLAB - Color Thresholder %%%%%
+\subsection{MATLAB - Color Thresholder}
+MATLAB's  applikation Color Thresholder er blevet brugt til at bestemme, hvilket color space og hvilke farvegrænseværdier, der er mest optimale til at identificere de farvede klodser med webcamet.
+
+I Color Thresholder indlæses et billede, taget med webcamet, hvorpå en klods af hver farve er repræsenteret.
+Valget af color space baseres på hvor klodserne adskiller sig mest fra bordpladen.
+På figur \vref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV er størst kontrast mellem klodser og bordplade.
+Det vælges derfor at arbejde i color spacet HSV.
+
+\figur{1}{ColorThresholderColorSpace.pdf}{MATLAB's applikation Color Thresholder til identifikation af optimalt color space.}{fig:ColorThresholderColorSpace}
+
+Color Thresholder bruges derefter til at finde grænseværdierne til hhv. H, S og V kanalerne, til identifikation af de forskelligt farvede klodser.
+Figur \vref{fig:ColorThresholderBlue} er et eksempel på grænseværdierne til identifikation af den blå klods.
+
+\figur{1}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV}{fig:ColorThresholderBlue}
+
+For hver farve blev følgende grænseværdier identificeret (se bilag \vref{app:MATLABVision} for funktioner til identifikation af hver farve):
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+Farve	&	H			&	S			&	V\\
+\hline
+Blå		&	0.515-0.790	&	0.300-1.000	&	0.400-1.000\\
+Rød		&	0.900-0.080	&	0.300-1.000	&	0.000-1.000\\
+Grøn	&	0.200-0.415	&	0.300-1.000	&	0.000-1.000\\
+Gul		&	0.115-0.210	&	0.300-1.000	&	0.400-1.000\\
+\end{tabular}	
+\caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
+\end{table}
+
+Det ses på figur \vref{fig:ColorThresholderBlue}, at nogen områder uden for bordpladen ikke forsvinder helt ved denne segmentering, da de har farver, der ligger tæt på om den blå klods.
+Dette ville løses ved at beskære billedet således, at kun bordpladen vises på billedet.
+Derudover skal der kun identificeres klodser på højre side af billedet, hvorfor billedet beskæres yderligere, så kun det interessante område er vises.
+
+Figur \vref{fig:ColorThresholderResult} viser resultatet på MATLAB analysen, som beskærer billedet og identificerer klodser i de fire farver, blå, rød, grøn og gul.
+Se bilag \vref{app:MATLABVision} for script og funktioner brugt i analysen.
+Det ses på figur \vref{fig:ColorThresholderResult}, at det vil være nødvendigt at implementerer en grænseværdi for størrelsen af klodserne, da der er små områder der ikke er forsvundet helt ved segmenteringen.
+
+\figur{1}{ColorThresholderResult.pdf}{Resultat af MATLAB analysen}{fig:ColorThresholderResult}
+
+%%%%% OpenCV vision %%%%%
+\subsection{OpenCV vision}
