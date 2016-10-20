@@ -63,6 +63,8 @@ class RobotExecute:
     def __init__(self,server_name, angles, rotate, gripper, speed):
         self.client = actionlib.SimpleActionClient(server_name, FollowJointTrajectoryAction)
 
+        self.joint_positions = []
+
         self.names =["joint1",
                         "joint2",
                         "joint3",
@@ -70,7 +72,7 @@ class RobotExecute:
                         "gripper"
                         ]
         # the list of xyz points we want to plan
-        self.joint_positions = [
+        joint_positions = [
         [angles[0], angles[1], angles[2], rotate, gripper]
         ]
 
