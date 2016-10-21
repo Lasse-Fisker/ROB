@@ -113,7 +113,7 @@ def mirrorCube(xy):
     air1 = 15
     air2 = 30
     table = 6
-    grapper_pos = 0.8
+    grapper_pos = 0
     not_rotated = 0
     rotated = 1.5
     top = invkin([0, 0, 54.1])
@@ -130,9 +130,9 @@ def mirrorCube(xy):
 
     #grab brick. While pressure is low enough, increase grabber position until brick is secured.
     while grabberPressure < 700:
-        grapper_pos =+ 0.1
+        print "grabber pressure is: %d" % grabberPressure
+        grapper_pos += 0.3
         RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grapper_pos)
-        time.sleep(time2)
 
     #rotate - to air low
     RobotDo(invkin([xy[0], xy[1], air1]), rotated, grapper_pos)
@@ -196,7 +196,7 @@ def setupGrabberPressureSensor():
 
 # callback method for pressure sensor
 def handleReadPressure(val):
-    grabberPressure = val
+    global grabberPressure
+    grabberPressure = val.data
 
     #debug
-    print "grabber pressure is: %d" % val.data
