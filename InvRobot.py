@@ -99,11 +99,7 @@ class RobotExecute:
         #print self.client.get_result()
 
 
-def RobotDo(angles, rotate, gripper):
-        
-    print 'RobotExecute started: '
-    print '______________________'
-    
+def RobotDo(angles, rotate, gripper):   
     node = RobotExecute("/arm_controller/follow_joint_trajectory", angles, rotate, gripper)
     
     node.send_command()
