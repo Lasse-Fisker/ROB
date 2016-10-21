@@ -113,7 +113,7 @@ def mirrorCube(xy):
     air1 = 15
     air2 = 30
     table = 6
-    grapper_pos = 0
+    grabber_pos = 0
     not_rotated = 0
     rotated = 1.5
     top = invkin([0, 0, 54.1])
@@ -121,51 +121,51 @@ def mirrorCube(xy):
     time2 = 0.5
 
     #in air
-    RobotDo(invkin([xy[0], xy[1], air2]), not_rotated, grapper_pos)
+    RobotDo(invkin([xy[0], xy[1], air2]), not_rotated, grabber_pos)
     time.sleep(time1)
 
     #to table
-    RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grapper_pos)
+    RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
 
     #grab brick. While pressure is low enough, increase grabber position until brick is secured.
     while grabberPressure < 700:
         print "grabber pressure is: %d" % grabberPressure
-        grapper_pos += 0.3
-        RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grapper_pos)
+        grabber_pos += 0.3
+        RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
 
     #rotate - to air low
-    RobotDo(invkin([xy[0], xy[1], air1]), rotated, grapper_pos)
+    RobotDo(invkin([xy[0], xy[1], air1]), rotated, grabber_pos)
     time.sleep(time2)
 
     #to air 
-    RobotDo(invkin([xy[0], xy[1], air2]), rotated, grapper_pos)
+    RobotDo(invkin([xy[0], xy[1], air2]), rotated, grabber_pos)
     time.sleep(time1)
 
     #to mirrored X Y
-    RobotDo(invkin([xy[0], -xy[1], air2]), rotated, grapper_pos)
+    RobotDo(invkin([xy[0], -xy[1], air2]), rotated, grabber_pos)
     time.sleep(time2)
 
     # lower
-    RobotDo(invkin([xy[0], -xy[1], air1]), rotated, grapper_pos)
+    RobotDo(invkin([xy[0], -xy[1], air1]), rotated, grabber_pos)
     time.sleep(time1)
 
     #table un rotate
-    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grapper_pos)
+    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
 
     #release
-    grapper_pos = 0
-    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grapper_pos)
+    grabber_pos = 0
+    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
 
     # to air
-    RobotDo(invkin([xy[0], -xy[1], air1]), not_rotated, grapper_pos)
+    RobotDo(invkin([xy[0], -xy[1], air1]), not_rotated, grabber_pos)
     time.sleep(time2)
 
     # higher air
-    RobotDo(invkin([xy[0], -xy[1], air2]), not_rotated, grapper_pos)
-    RobotDo(top, not_rotated, grapper_pos)
+    RobotDo(invkin([xy[0], -xy[1], air2]), not_rotated, grabber_pos)
+    RobotDo(top, not_rotated, grabber_pos)
     time.sleep(2)
 
 def RobotLowFive():
