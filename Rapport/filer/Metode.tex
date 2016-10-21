@@ -128,6 +128,18 @@ Testen viste at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
 Derfor trækkes pixel koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
 Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordinatsystem for alle klodser identificeret af vision aloritmerne.
 
+%%%%%%%%%% Robot system %%%%%%%%%%
+\section{Robot system}
+\subsection{Invers kinematik}
+Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal lave
+en matematisk conventering fra koordinatsæt til de vinkle laves.\newline
+Først skal længderne af robottens links bestemmes:
+\figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
+Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
+\figur{0.2}{q1}{Formel for q1}{fig:q1}
+derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
+\figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
+Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
@@ -191,13 +203,6 @@ Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og re
 	\texttt{rosrun rosserial\_python serial\_node.py /dev/AMC0 \_baud:=57600}
 	
 	De sidste to argumenter specificerer henholdsvis den port, som microcontrolleren befinder sig på, og den baud rate, som forbindelsen skal oprettes med.
-
-
-
-
-
-
-
 
 
 
