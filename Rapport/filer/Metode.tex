@@ -159,6 +159,7 @@ funktionen find_brick_centers() kaldes og der bliver returnet x,y kooridnater p�
 Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
 Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
+
 %%%%%%%%%% Robot system %%%%%%%%%%
 \section{Robot system}
 \subsection{Invers kinematik}
@@ -171,6 +172,36 @@ Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
 derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
 \figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
 Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
+
+\subsection{Links og joints}
+Robotten består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
+
+\figur{0.60}{crustCrawlerLinks.png}{Figur over links på crustcrawler}{fig:crustCrawlerLinks}
+
+Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af 4 links. 
+
+\subsection{Coordinate frames}
+Det at bestemme koordinat rammerne for robotten, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for robotten. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
+
+\figur{0.60}{crustCrawlerCoordinateFrames.png}{Figur over coordinate frames på crustcrawler}{fig:crustCrawlerLinks}
+
+Med koordinat rammerne og informationer om links kan Denavit Hartenberg parametrene findes. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l}
+Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
+\hline
+1		&	$\theta$1			&	16.8			&	0			&	90\\
+2		&	$\theta$2			&	0			&	17.31		&	0\\
+3		&	$\theta$3			&	0			&	0			&	90\\
+4		&	$\theta$4			&	23.5			&	0			&	0\\
+\end{tabular}	
+\caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
+\end{table}
+
+
+
 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
@@ -231,7 +262,7 @@ For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er de
 \subsection{Kommunikation med ROS}
 Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
 
-	\texttt{rosrun rosserial\_python serial\_node.py /dev/AMC0 \_baud:=57600}
+	\texttt{rosrun rosserial\_python serial\_node.py /dev/ttyACM0 \_baud:=57600}
 	
 	De sidste to argumenter specificerer henholdsvis den port, som microcontrolleren befinder sig på, og den baud rate, som forbindelsen skal oprettes med.
 
