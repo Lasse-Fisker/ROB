@@ -212,6 +212,13 @@ derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 best
 \figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
 Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
 
+\subsection{RobotExecute}
+Klassen \texttt{RobotExecute()} håndterer konstruktionen og afsendelsen af kommandoer til robotten. Dette gøres vha. ROSPY bibliotekets \texttt{SimpleActionClient}.
+
+Først opbygges en liste af joint positions, der hver indeholde det enkelte joints position, en velocity samt tiden, der går fra start af kommandoen.
+Derefter lægges disse positioner ind i et joinTrajectory objekt, der udover disse indeholder navnene, der beskriver de enkelte joints).
+Selve kommandoen til robotten består af et goal, der indeholder joinTrajectory objektet samt en tidstolerance.
+Dette mål sendes afsted til robotten, hvorefter der afventes resultat. 
 
 
 
