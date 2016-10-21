@@ -3,8 +3,17 @@ For at identificere hvor mange pixels, der er pr. enhed i CrustCrawlerens koordi
 Dette gøres ved at placere robotten i et koordinat f.eks. (10,10) og placere en klods netop der.
 Derefter placeres robotten et sted uden for billedet hvorefter webcamet tager et billede af den placerede klods.
 På dette billede udføres vision funktionerne  hvilke returnerer et punkt (række og kolonne) i billedet koordinatsystem.
+\textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
 
-
+For at finde hvor mange pixels der er pr. enhed i CrustCrawlerens x-akse laves følgende udregning:
+\begin{equation}
+	x_{forhold}=\frac{295-row}{x}
+\end{equation}
+Da \textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet trækkes pixel koordinatets rækkeværdi fra højden af billedet (295 pixels) for at vende aksen om.
+For at finde hvor mange pixels der er pr. enhed i CrustCrawlerens y-akse laves følgende udregning:
+\begin{equation}
+	y_{forhold}=\frac{column}{y}
+\end{equation}
 
 Nedenstående er en tabel over resultaterne:
 \begin{table}[H]
@@ -24,8 +33,8 @@ CrustCrawler koordinater (x,y)	&	Billede koordinater (kolonne,række)	& Forhold\
 \end{tabular}	
 \caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
 \end{table}
-
-Ud fra resultaterne i tabellen herover udregnes middelværdien for antal pixels pr. enheder i CrustCrawlerens koordinatsystem i x og y retningen:
+\newpage
+Ud fra resultaterne i tabellen herover udregnes middelværdien for antal pixels pr. enheder i CrustCrawlerens koordinatsystem i x- og y- akser:
 \begin{equation}
 	mid_x=\frac{8.9+9.2+9.1+8.7+9.1+9.1+9.3+8.9+9.0}{9}=9.0
 \end{equation}
@@ -34,4 +43,4 @@ Ud fra resultaterne i tabellen herover udregnes middelværdien for antal pixels 
 	mid_y=\frac{9.5+8.7+9.3+9.2+9.5+8.8+8.9+8.5+8.8}{9}=9.0
 \end{equation}
 
-Der er derfor 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
+Der er derfor 9 pixels pr. enhed i CrustCrawlerens koordinatsystem på begge akser.
