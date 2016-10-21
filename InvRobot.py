@@ -13,7 +13,7 @@ import math
 import time
 from std_msgs.msg import Int32
 
-grabberPressure = 0;
+grabberPressure = 0
 
 def invkin(xyz):
     """
