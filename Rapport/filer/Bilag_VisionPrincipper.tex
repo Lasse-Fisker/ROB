@@ -2,9 +2,49 @@
 
 %%%%%%%%%% Makser %%%%%%%%%%
 \section{Masker}\label{sec:Masker}
+En maske er et logisk billede hvor ønskede områder af et billede har pixelværdierne 1 (hvid) og uønskede områder af et billede har pixelværdierne 0 (sort).
+De ønskede og uønskede områder bestemmes ved grænseværdier.
+Alle pixels med en værdi inden for disse grænseværdier sættes til 1 og alle andre sættes til 0.
+På denne måde er der oprettet et logisk (sort/hvid) billede kaldet en maske.
+En sådan maske kan ganges på et billede så kun de områder på billedet svarende til de hvide områder på masken vises.
+Nedenstående figur er et eksempel på oprettelse af en maske.
+Første billede er original billedet af lyse ris på en grå baggrund.
+Andet billede er en maske oprettet med grænseværdier der fjerner baggrunden og beholder risene.
+Risene er dermed 1 (hvide) og baggrunden er 0 (sort).
+Tredje billede er billedet hvorpå masken er ganget på.
+Risene er bibeholdt, men baggrunden er fjernet.
+\figur{1}{Mask}{Maske oprettet på et billede af ris.}{fig:mask}
 
-%%%%%%%%%% Makser %%%%%%%%%%
-\section{Morphologi}\label{sec:Morphologi}
+%%%%%%%%%% Morfologiske operationer %%%%%%%%%%
+\newpage
+\section{Morfologiske opreationer}\label{sec:Morphologi}
+Morfologiske operationer udføres langs kanten af områder typisk i et logisk billede ved brug af et struktur element.
+Et struktur element er et objekt med en form og størrelse, som bestemmer hvordan operationerne udføres.
 \subsection{Erode}
+Ved erode kører strukturelementet langs kanten på områder på, f.eks. et logisk billede hvor pixelværdierne er 1, og fjerner de dele af området der kommer i kontakt med strukturelementet.
+Erode fjerner områder langs kanten af objekter svarende til formen og størrelsen på et defineret struktur element.
+
+\figur{0.4}{Erode}{Erode opeartionens effekt på et objekt med et rundt struktur element.}{fig:erode}
+
 \subsection{Dialate}
+Ved dialate kører strukturelementet langs kanten på områder på, f.eks. et logisk billede hvor pixelværdierne er 1, og tilføjer de dele, som ikke er en del af området i forvejen, der kommer i kontakt med strukturelementet.
+Dialate tilføjer områder langs kanten af objekter svarende til formen og størrelsen på et defineret struktur element.
+
+\figur{0.4}{Dialate}{Dialate opeartionens effekt på et objekt med et rundt struktur element.}{fig:dialate}
+\newpage
+\subsection{Open}
+Open operationen starter med at lave en erode og derefter en dialate operation.
+Dette adskiller objekter fra hinanden.
+\figur{0.4}{Open}{Open opeartionens effekt på et objekt med et rundt struktur element.}{fig:open}
+
+\subsection{Close}
+Close operationen starter med at lave en dialate og derefter en erode operation.
+Dette lukker huller i områder.
+\figur{0.4}{Close}{Close opeartionens effekt på et objekt med et rundt struktur element.}{fig:close}
+
+
+
+
+
+
 
