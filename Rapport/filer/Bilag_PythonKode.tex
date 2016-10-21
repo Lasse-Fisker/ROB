@@ -1,5 +1,6 @@
 \chapter{Python Kode}\label{app:PythonKode}
-\section{Main}\label{sec:Main}
+%%%%%%%%%% main.py %%%%%%%%%%
+\section{main.py}\label{sec:Main}
 \begin{lstlisting}[language=Python]
 #!/usr/bin/env python
 
@@ -16,52 +17,42 @@ import time
 from std_msgs.msg import String
 
 from InvRobot import *
-from findBricks import *
+from GetCoordinates import *
 
 visionCoor = []
 
-def getCoordinates(coord):    
-    global visionCoor
-    
-    coord_str = str(coord)
-    coor = coord_str.replace("data: ","")
-    visionCoor = [float(s) for s in coor.split(',')]
-    
-    if visionCoor[0] == 0 and visionCoor[1] == 0:
-        print "Nu skal programmet stoppe"
-        visionCoor = []
-        print "VisionCoor"
-        print visionCoor
-
 def main():
+        
     Jobactive = True
     Job = False
     
     while Jobactive == True:
-        print "V3"
-        print visionCoor
-        xy = visionCoor
+        xy = returnvisionCoor()
+        print "XY: "
+        print xy
         if len(xy) > 0:
             mirrorCube(xy)
             Job = True
         else:
             Jobactive = False
             if Job == True:
-                RobotLowFive()
+                RobotHandshake()
                 print "Jobs done"
             else:
-                print "There wasnt any job "
-                
+                print "There wasnt any job "                
 if __name__ == "__main__":
-    rospy.init_node("InvRobot")
-    rospy.Subscriber("Coordinates", String, getCoordinates)
+    setUpVisonCoordinates()
     setupGrabberPressureSensor()
-
     top = invkin([0,0, 54.1])
     RobotDo(top,0,0)
+    print 'Main started: '
+    print '______________________'
     main()
 \end{lstlisting}
-\section{Vision Node}\label{sec:VisionNode}
+
+\newpage
+%%%%%%%%%% Vision.py %%%%%%%%%%
+\section{Vision.py}\label{sec:VisionNode}
 \begin{lstlisting}[language=Python]
 #!/usr/bin/env python
 
@@ -73,7 +64,7 @@ def VisionPublisher():
     
     pub = rospy.Publisher('Coordinates', String, queue_size=10)
     rospy.init_node('VisionPublisher', anonymous=True)
-    rate = rospy.Rate(1) # 10hz
+    rate = rospy.Rate(1) # 1hz
     while not rospy.is_shutdown():
         try:
             bricks = find_brick_centers()
@@ -96,18 +87,19 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException:
         pass
 \end{lstlisting}
-\section{Vision funktioner}\label{sec:VisionFuntioner}
+
+\newpage
+%%%%%%%%%% findBricks.py %%%%%%%%%%
+\section{findBricks.py}\label{sec:VisionFuntioner}
 \begin{lstlisting}[language=Python]
 #!/usr/bin/env python
+
 import cv2
 import urllib
 import numpy as np
 import math
 
 def get_from_webcam():
-    """
-    Fetches an image from the webcam
-    """
     print "try fetch from webcam..."
     stream=urllib.urlopen('http://192.168.0.20/image/jpeg.cgi')
     bytes=''
@@ -125,11 +117,6 @@ def get_from_webcam():
         print "did not receive image, try increasing the buffer size in line 13:"
 
 def extract_single_color_range(image,hsv,lower,upper):
-    """
-    Calculates a mask for which all pixels within the specified range is set to 1
-    the ands this mask with the provided image such that color information is
-    still present, but only for the specified range
-    """
     if len(lower) == 2 and len(upper) == 2:
         mask0 = cv2.inRange(hsv, lower[0], upper[0])
         mask1 = cv2.inRange(hsv, lower[1], upper[1])
@@ -140,35 +127,17 @@ def extract_single_color_range(image,hsv,lower,upper):
     return res
 
 def threshold_image(image):
-    """
-    Thresholds the image within the desired range and then dilates with a 3x3 matrix
-    such that small holes are filled. Afterwards the 'blobs' are closed using a
-    combination of dilate and erode
-    """
     ret,th1 = cv2.threshold(image,50,255,cv2.THRESH_BINARY)
     resdi = cv2.dilate(th1,np.ones((3,3),np.uint8))
     closing = cv2.morphologyEx(resdi, cv2.MORPH_CLOSE,np.ones((5,5),np.uint8))
-    
     return closing
 
 def contours(image):
-    """
-    Extract the contours of the image by first converting it to grayscale and then
-    call findContours
-    """
     imgray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     contours, hierarchy = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
     return contours
 
 def get_centers(contours):
-    """
-    For each contour in contours
-        approximate the contours such that small variations are removed
-        calulate the area of the contour
-        if the area is within the desired range we append the box points to the
-        bricks.
-    """
     centers = []
     for cnt in contours:
         epsilon = 0.1*cv2.arcLength(cnt,True)
@@ -180,7 +149,6 @@ def get_centers(contours):
             centers.append((int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00'])))
     
     return centers
-    
 
 def find_brick_centers():    
     lower_blue = np.array([92,76,103])
@@ -245,9 +213,13 @@ def find_brick_centers():
                           
     return centers_cm
 \end{lstlisting}
-\section{Inverse Robot}\label{sec:InvRobot}
+
+\newpage
+%%%%%%%%%% InvRobot.py %%%%%%%%%%
+\section{InvRobot.py}\label{sec:InvRobot}
 \begin{lstlisting}[language=Python]
 #!/usr/bin/env python
+
 
 import rospy
 import actionlib
@@ -347,11 +319,7 @@ class RobotExecute:
         #print self.client.get_result()
 
 
-def RobotDo(angles, rotate, gripper):
-        
-    print 'RobotExecute started: '
-    print '______________________'
-    
+def RobotDo(angles, rotate, gripper):   
     node = RobotExecute("/arm_controller/follow_joint_trajectory", angles, rotate, gripper)
     
     node.send_command()
@@ -377,9 +345,9 @@ def mirrorCube(xy):
     time.sleep(time1)
 
     #grab brick. While pressure is low enough, increase grabber position until brick is secured.
-    while grabberPressure < 700:
+    while grabberPressure < 600:
         print "grabber pressure is: %d" % grabberPressure
-        grabber_pos += 0.3
+        grabber_pos += 0.4
         RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
 
     #rotate - to air low
@@ -416,27 +384,21 @@ def mirrorCube(xy):
     RobotDo(top, not_rotated, grabber_pos)
     time.sleep(2)
 
-def RobotLowFive():
+def RobotHandshake():
 
     x = 28
     y = 0
-    z = 40
+    z = 30
     not_rotated = 0
-    rotated = 1.5
+    not_grapped = 0
     top = invkin([0, 0, 54.1])
-    i = 0    
+    
+    RobotDo(invkin([x, y, z]),not_rotated,not_grapped)
 
-    dur = rospy.Duration(1)
+    while grabberPressure < 700:
+        pass
 
-    RobotDo(top, rotated, 0)
-    time.sleep(0.5)
-    RobotDo(top, not_rotated, 0)
-
-    while i < 31:
-        RobotDo(invkin([x, y, z-i]), not_rotated, 0)
-        i += 10
-
-    RobotDo(top, not_rotated, 0)
+    RobotDo(top, not_rotated, not_grapped)
 
 # setup subscriber for pressure sensor
 def setupGrabberPressureSensor():
@@ -448,9 +410,51 @@ def handleReadPressure(val):
     grabberPressure = val.data
 
     #debug
-
 \end{lstlisting}
-\section{Strain Gauge}\label{sec:StrainGauge}
+
+%%%%%%%%%% GetCoordinates.py %%%%%%%%%%
+\section{GetCoordinates.py}\label{sec:GetCoordinates}
+\begin{lstlisting}[language=C]
+#!/usr/bin/env python
+
+import rospy
+import actionlib
+from control_msgs.msg import FollowJointTrajectoryAction
+from control_msgs.msg import FollowJointTrajectoryFeedback
+from control_msgs.msg import FollowJointTrajectoryResult
+from control_msgs.msg import FollowJointTrajectoryGoal
+from trajectory_msgs.msg import JointTrajectoryPoint
+from trajectory_msgs.msg import JointTrajectory
+import math
+import time
+from std_msgs.msg import String
+
+from findBricks import *
+
+visionCoor = []
+
+def getCoordinates(coord):    
+    global visionCoor
+    
+    coord_str = str(coord)
+    coor = coord_str.replace("data: ","")
+    visionCoor = [float(s) for s in coor.split(',')]
+    
+    if visionCoor[0] == 0 and visionCoor[1] == 0:
+        visionCoor = []
+
+# Subcribing on Coordinates node
+def setUpVisonCoordinates():
+    rospy.init_node("InvRobot")
+    rospy.Subscriber("Coordinates", String, getCoordinates)
+
+# Return the vision coordinates
+def returnvisionCoor():
+    return visionCoor
+\end{lstlisting}
+\newpage
+%%%%%%%%%% arduino_strain_gauge.ino %%%%%%%%%%
+\section{arduino\_strain\_gauge.ino}\label{sec:StrainGauge}
 \begin{lstlisting}[language=C]
 #include <ros.h>
 #include <std_msgs/Bool.h>

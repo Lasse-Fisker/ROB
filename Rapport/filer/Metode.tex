@@ -1,19 +1,30 @@
 \chapter{Metode}\label{chap:Metode}
-\section{main}
-\subsection{flow af main}
-Dette afsnit beskriver robotten funktion i forhold til opgavebeskrivelsen samt beskrivning af kodningen af main.
-robotten starter med at gå til udgangspunktet (robotten står lige op i luften). derefter tages et billede af arbejdsområdet af vision.
-Derefter bliver billede manipuleret med, så der findes centrum på alle klodserne som er indenfor arbejdsområdet. Koordinaterne blevet sendt til robotten hvor, så robotten spejler klodsen over på dubklikeringsområdet. Hvis der ikke flere klodser er, går robotten ud i en fast position hvor den afventer en tryk i grabberen og så afslutter programmet \newline
-nedenunder ses et flow chart af programmet:
+%%%%%%%%%% System system %%%%%%%%%%
+\section{Systemflow}
+CrustCrawleren starter med at gå til en defineret udgangsposition hvor den står lodret.
+Derefter tages et billede med webcamet, som er monteret ca. 1 meter over bordet som CrustCrawleren er monteret på.
+Vision systemet udføres på billedet og finder centrum på klodserne på billedet inden for arbejdsområdet.
+Koordinaterne blevet sendt til CrustCrawleren, hvorefter den bevæger sig til denne position.
+Når CrustCrawleren har nået positionen aflæses trykket på tryksensoren.
+Sålænge trykket ikke overstiger en fast grænseværdi fortsætter grabberen med at lukke sig.
+Så snart trykket når grænseværdien bevæger robotten sig til spejlingspositionen i dubklikeringsområdet og åbner grabberen.
+Dette fortsætter indtil der ikke findes flere klodser i arbejdsområdet.
+Når CrustCrawleren ikke registrerer flere klodser bevæger den sig til en håndtryksposition, hvor den afventer en tryk i grabberen hvorefter programmet afsluttes.
+Figur \vref{fig:Flowchart} viser et flowchart diagram over flowet i main funktionen.
 \figur{1}{Flowchart}{Flow chart main}{fig:Flowchart}
-\subsection{Koden af main}
+
+%%%%%%%%%% Main system %%%%%%%%%%
+\section{Main system}
 Main starter med at initialisere de 3 noder: InvRobot, VisionPublisher og grabber\_check\_pressure.
 derefter Subscribes på VisionPublisher og grabber\_check\_pressure, så programmet får værdierne af de 2 topics.
 Derefter 
 Indenunder ses et sekvens diagram af main programmet:
 \figur{1}{MainSequenceDiagram}{Main sekvens diagram}{fig:MainSequenceDiagram}
 
+\textbf{Skriv færdigt...}
+
 %%%%%%%%%% Vision system %%%%%%%%%%
+\newpage
 \section{Vision system}
 Vision systemet i dette projekt har til formål at finde positionen af hver klods, der skal flyttes af CrustCrawleren.
 Dette gøre ved brug af billeder taget med et webcam monteret ca. 1 m over det bord, CrustCrawleren er monteret på.
@@ -172,15 +183,18 @@ funktionen find\_brick\_centers() kaldes og der bliver returnet x,y kooridnater 
 Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
 Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
-
 %%%%%%%%%% Robot system %%%%%%%%%%
+\newpage
 \section{Robot system}
+Skriv indledende tekst...
 \subsection{Links og joints}
 Robotten består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
 
-\figur{0.60}{crustCrawlerLinks.png}{Figur over links på crustcrawler}{fig:crustCrawlerLinks}
+\figur{1}{crustCrawlerLinks.png}{Figur over links på crustcrawler}{fig:crustCrawlerLinks}
 
-Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af 4 links. 
+Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af 4 links.
+
+\textbf{Måske noget med frihedsgrader?}
 
 \subsection{Coordinate frames}
 Det at bestemme koordinat rammerne for robotten, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for robotten. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
@@ -202,6 +216,8 @@ Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
 \caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
 \end{table}
 
+\textbf{Bilag med Denavit-Hartenberg teori?}
+
 \subsection{Invers kinematik}
 Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal lave
 en matematisk conventering fra koordinatsæt til de vinkle laves.\newline
@@ -221,10 +237,11 @@ Derefter lægges disse positioner ind i et joinTrajectory objekt, der udover dis
 Selve kommandoen til robotten består af et goal, der indeholder joinTrajectory objektet samt en tidstolerance.
 Dette mål sendes afsted til robotten, hvorefter der afventes resultat. 
 
-
+\textbf{Lidt mere gennemgang af hvad koden gør?}
 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
+\newpage
 \section{Pressure sensor system}
 For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvend. 
 
