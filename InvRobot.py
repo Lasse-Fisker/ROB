@@ -129,9 +129,9 @@ def mirrorCube(xy):
     time.sleep(time1)
 
     #grab brick. While pressure is low enough, increase grabber position until brick is secured.
-    while grabberPressure < 700:
+    while grabberPressure < 600:
         print "grabber pressure is: %d" % grabberPressure
-        grabber_pos += 0.3
+        grabber_pos += 0.4
         RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
 
     #rotate - to air low
@@ -179,8 +179,8 @@ def RobotHandshake():
     
     RobotDo(invkin([x, y, z]),not_rotated,not_grapped)
 
-     while grabberPressure < 700:
-         pass
+    while grabberPressure < 700:
+        pass
 
     RobotDo(top, not_rotated, not_grapped)
 
