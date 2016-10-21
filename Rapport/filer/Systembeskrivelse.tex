@@ -7,17 +7,26 @@ Før spejling klargøres et mønster bestående af klodser med klare, ensartede,
 dertilhørende opstillingsareal (A).
 PMD vil derefter påbegynde duplikeringen af det fremlagte mønster, blot spejlvendt, på det
 tilstødende duplikeringsareal (B).
+
 Ved færdig spejling vil PMD bevæge sig til en neutral position og påbegynde det hard­codede
 afslutningssignal. Brugerens hånd placeres, med håndfladen opad, i midten af PMD’s
 arbejdsområde. PMD vil bevæge sig mod hånden. Ved kontakt
 mellem bruger of PMD signalerer korrekt spejlning. PMD returnerer herefter til udgangspositionen.
 \figur{1}{Opgavebeskrivelse_Robotfigur}{Systemillustration}{fig:Systemillustration}
 
-%%%%%%%%%% System setup %%%%%%%%%%
-\section{System setup}\label{sec:SystemSetup}
-
 %%%%%%%%%% Hardware %%%%%%%%%%
 \section{Hardware}\label{sec:Hardware}
+Systemet indeholder vision recognition i form af et fast monteret kamera, der anvendes til at
+analysere det eksisterende mønster og til at udrssegne de påkrævede koordinater, som PMD skal
+navigere til. 
 
+Udover dette anvendes en strain gauger til at detektere, hvorvidt et objekt er holdt fast af robotten 
+ved at måle det tryk, som denne udøver på den givne overflade. strain gauge er tilsluttet en arduino microcontoller.
+
+Robottens eksisterende aktuator anvendes til at manipulere de påkrævede objekter.
 %%%%%%%%%% Software %%%%%%%%%%
 \section{Software}\label{sec:Software}
+Strain gauge bliver implementeret i en arduino microcontroller. For at denne kan kommunikere med resten af system er
+biblioteket ROS Seriel blevet brugt, til at lave en publisher. sproget er adruinos subset af C.
+
+Programmet til at controllere robotten er skrevet i python hvor ROS PY biblioteket er blevet brugt. Robotten bliver styret fra en virtuelmaskine i et linux miljø.
