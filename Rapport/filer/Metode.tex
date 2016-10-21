@@ -1,4 +1,16 @@
 \chapter{Metode}\label{chap:Metode}
+\section{main}
+Dette afsnit beskriver robotten funktion i forhold til opgavebeskrivelsen samt beskrivning af kodningen af main.
+robotten starter med at gå til udgangspunktet (robotten står lige op i luften). derefter tages et billede af arbejdsområdet af vision.
+Derefter bliver billede manipuleret med, så der findes centrum på alle klodserne som er indenfor arbejdsområdet. Koordinaterne blevet sendt til robotten hvor, så robotten spejler klodsen over på dubklikeringsområdet. Hvis der ikke flere klodser er bliver
+
+nedenunder ses et flow chart af programmet:
+\figur{1}{Flowchart}{Flow chart main}{fig:Flowchart}
+Main starter med at initialisere de 3 noder: InvRobot, VisionPublisher og grabber\_check\_pressure.
+
+
+Indenunder ses et sekvens diagram af main programmet:
+\figur{1}{MainSequenceDiagram}{Main sekvens diagram}{fig:MainSequenceDiagram}
 
 %%%%%%%%%% Vision system %%%%%%%%%%
 \section{Vision system}
@@ -15,7 +27,7 @@ MATLAB's  applikation Color Thresholder er blevet brugt til at bestemme, hvilket
 
 I Color Thresholder indlæses et billede, taget med webcamet, hvorpå en klods af hver farve er repræsenteret.
 Valget af color space baseres på hvor klodserne adskiller sig mest fra bordpladen, da bordpladen skal fjernes med den oprettede maske.
-På figur \vref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV (Hue, Saturation, Value) er størst kontrast mellem klodser og bordplade.
+På figur \ref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV (Hue, Saturation, Value) er størst kontrast mellem klodser og bordplade.
 Det vælges derfor at arbejde i color spacet HSV.
 
 \figur{0.75}{ColorThresholderColorSpace.pdf}{MATLAB's applikation Color Thresholder til identifikation af optimalt color space. Den røde firkant viser, hvor der er stor kontrast mellem klodser og bordplade.}{fig:ColorThresholderColorSpace}
