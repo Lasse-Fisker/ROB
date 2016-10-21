@@ -13,31 +13,19 @@ import time
 from std_msgs.msg import String
 
 from InvRobot import *
-from findBricks import *
+from GetCoordinates import *
 
 visionCoor = []
 
-def getCoordinates(coord):    
-    global visionCoor
-    
-    coord_str = str(coord)
-    coor = coord_str.replace("data: ","")
-    visionCoor = [float(s) for s in coor.split(',')]
-    
-    if visionCoor[0] == 0 and visionCoor[1] == 0:
-        print "Nu skal programmet stoppe"
-        visionCoor = []
-        print "VisionCoor"
-        print visionCoor
-
 def main():
+        
     Jobactive = True
     Job = False
     
     while Jobactive == True:
-        print "V3"
-        print visionCoor
-        xy = visionCoor
+        xy = returnvisionCoor()
+        print "XY: "
+        print xy
         if len(xy) > 0:
             mirrorCube(xy)
             Job = True
@@ -47,15 +35,14 @@ def main():
                 RobotHandshake()
                 print "Jobs done"
             else:
-                print "There wasnt any job "
-                
+                print "There wasnt any job "                
 if __name__ == "__main__":
-    rospy.init_node("InvRobot")
-    rospy.Subscriber("Coordinates", String, getCoordinates)
+    setUpVisonCoordinates()
     setupGrabberPressureSensor()
-
     top = invkin([0,0, 54.1])
     RobotDo(top,0,0)
+    print 'Main started: '
+    print '______________________'
     main()
 
 
