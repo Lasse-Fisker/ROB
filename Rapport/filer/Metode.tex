@@ -128,6 +128,69 @@ Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordi
 
 
 
+%%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
+\section{Pressure sensor system}
+For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvend. 
+
+\subsection{FSR 402 - Tryksensor}
+Til at måle trykket, er en Interlink FSR 402 Short anvendt. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
+
+\figur{0.30}{FSRWiringDiagram.png}{Diagram over tilkobling af tryksensor til microcontroller}{fig:FSRWiringDiagram}
+
+Som det ses på figur \ref{fig:FSRWiringDiagram}, er sensoren på det ene ben koblet til microcontrollerens 5v forsyning, og på det andet ben koblet til en 10 KOhm modstand, samt den pin, der rent faktisk måles på. Dette fungerer ved, at efterhånden som modstanden over FSR Sensoren falder, så mindskes den samlede modstand over FSR Sensoren og pull down modstanden. Dette medfører, at strømstyrken over begge modstande øges, og spændingen over den faste modstand stiger. Dermed øges spændingen også til den pin hvorpå målingen foretages. 
+
+\subsection{Arduino - Microcontroller}
+Som microcontroller er en Arduino UNO blevet anvendt. Valget faldt på denne, da den er let at anvende sammen med analoge sensorer, samt let at integrere med ROS, da der findes et officielt bibliotek til kommunikation mellem Arduino og ROS. 
+Rosserial biblioteket anvendes til at oprette en node og publisere målinger. Til dette anvendes en nodehandler og en publisher. 
+
+\begin{lstlisting}[language=C]
+
+//variables
+ros::NodeHandle nh;
+std_msgs::Int32 pressureMsg
+ros::Publisher publisher("grabber_pressure", &pressureMsg);
+
+void setup()
+{
+  // init node
+  nh.initNode();
+
+  // setup publisher
+  nh.advertise(grabber_strain_gauge_publisher);
+  
+  //init serial comm
+  Serial.begin(57600);
+}
+
+\end{lstlisting}
+
+Læsning af sensoren og publisering af den data er meget simpel. Der foretages en læsning med \texttt{analogread()} metoden, der er en standard Arduino metode. Parametret der gives med er blot den pin, der foretages en læsning på. 
+Denne læsning sendes med som data attributten på den message, der publiseres. 
+
+\begin{lstlisting}[language=C]
+
+int checkStrain()
+{
+  return analogRead(strainGaugePin);
+}
+
+void publish(int val) {
+	pressureMsg.data = val;
+	publisher.publish(&pressureMsg);
+}
+
+\end{lstlisting}
+
+For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er der sat 10 millisekunders delay mellem hver læsning og publisering af data. 
+
+\subsection{Kommunikation med ROS}
+Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
+
+	\texttt{rosrun rosserial\_python serial\_node.py /dev/AMC0 \_baud:=57600}
+	
+	De sidste to argumenter specificerer henholdsvis den port, som microcontrolleren befinder sig på, og den baud rate, som forbindelsen skal oprettes med.
+
+
 
 
 
