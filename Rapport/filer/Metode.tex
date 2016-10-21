@@ -2,23 +2,28 @@
 
 %%%%%%%%%% Vision system %%%%%%%%%%
 \section{Vision system}
-Overordnet beskrivelse af vision systemet.
+Vision systemet i dette projekt har til formål at finde positionen af hver klods, der skal flyttes af CrustCrawleren.
+Dette gøre ved brug af billeder taget med et webcam monteret ca. 1 m over det bord, CrustCrawleren er monteret på.
+Dette gøres ved at oprette en maske, der fjerner alt på billederne undtagen klodserne der skal identificeres.
+Masken oprettes ved at lede efter farver inden for fastsatte grænseværdier og fjerne farver der ikke ligger inden for disse.
+MATLAB applikationen Color Thresholder bruges til at bestemme hvilket colorspace der skal arbejdet i og hvilke grænseværdier der identificerer klodserne.
+Til udvikling af vision noden i Python bruges funktioner fra OpenCV-Python, som indeholder algoritmer relateret til computer vision.
 
 %%%%% MATLAB - Color Thresholder %%%%%
 \subsection{MATLAB - Color Thresholder}
-MATLAB's  applikation Color Thresholder er blevet brugt til at bestemme, hvilket color space og hvilke farvegrænseværdier, der er mest optimale til at identificere de farvede klodser med webcamet.
+MATLAB's  applikation Color Thresholder er blevet brugt til at bestemme, hvilket color space og hvilke grænseværdier, der er mest optimale til at identificere de farvede klodser med webcamet.
 
 I Color Thresholder indlæses et billede, taget med webcamet, hvorpå en klods af hver farve er repræsenteret.
-Valget af color space baseres på hvor klodserne adskiller sig mest fra bordpladen.
-På figur \vref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV er størst kontrast mellem klodser og bordplade.
+Valget af color space baseres på hvor klodserne adskiller sig mest fra bordpladen, da bordpladen skal fjernes med den oprettede maske.
+På figur \vref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV (Hue, Saturation, Value) er størst kontrast mellem klodser og bordplade.
 Det vælges derfor at arbejde i color spacet HSV.
 
-\figur{1}{ColorThresholderColorSpace.pdf}{MATLAB's applikation Color Thresholder til identifikation af optimalt color space.}{fig:ColorThresholderColorSpace}
+\figur{0.75}{ColorThresholderColorSpace.pdf}{MATLAB's applikation Color Thresholder til identifikation af optimalt color space. Den røde firkant viser, hvor der er stor kontrast mellem klodser og bordplade.}{fig:ColorThresholderColorSpace}
 
 Color Thresholder bruges derefter til at finde grænseværdierne til hhv. H, S og V kanalerne, til identifikation af de forskelligt farvede klodser.
 Figur \vref{fig:ColorThresholderBlue} er et eksempel på grænseværdierne til identifikation af den blå klods.
 
-\figur{1}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV}{fig:ColorThresholderBlue}
+\figur{1}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV.}{fig:ColorThresholderBlue}
 
 For hver farve blev følgende grænseværdier identificeret (se bilag \vref{app:MATLABVision} for funktioner til identifikation af hver farve):
 \begin{table}[H]
@@ -34,15 +39,101 @@ Gul		&	0.115-0.210	&	0.300-1.000	&	0.400-1.000\\
 \caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
 \end{table}
 
-Det ses på figur \vref{fig:ColorThresholderBlue}, at nogen områder uden for bordpladen ikke forsvinder helt ved denne segmentering, da de har farver, der ligger tæt på om den blå klods.
+Det ses på figur \vref{fig:ColorThresholderBlue}, at nogle områder uden for bordpladen ikke forsvinder helt ved denne segmentering, da de har farver, der ligger tæt på den blå klods'.
 Dette ville løses ved at beskære billedet således, at kun bordpladen vises på billedet.
-Derudover skal der kun identificeres klodser på højre side af billedet, hvorfor billedet beskæres yderligere, så kun det interessante område er vises.
+Derudover skal der kun identificeres klodser på højre side af CrustCrawleren, hvorfor billedet beskæres yderligere, så kun det interessante område er vises.
 
 Figur \vref{fig:ColorThresholderResult} viser resultatet på MATLAB analysen, som beskærer billedet og identificerer klodser i de fire farver, blå, rød, grøn og gul.
 Se bilag \vref{app:MATLABVision} for script og funktioner brugt i analysen.
-Det ses på figur \vref{fig:ColorThresholderResult}, at det vil være nødvendigt at implementerer en grænseværdi for størrelsen af klodserne, da der er små områder der ikke er forsvundet helt ved segmenteringen.
+Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødvendigt at implementere en grænseværdi for hvor store områder, der skal identificeres som klodser, da der er små områder, der ikke forsvinder helt ved segmenteringen.
 
 \figur{1}{ColorThresholderResult.pdf}{Resultat af MATLAB analysen}{fig:ColorThresholderResult}
 
-%%%%% OpenCV vision %%%%%
-\subsection{OpenCV vision}
+%%%%% Vision med OpenCV-Python %%%%%
+\subsection{Vision med OpenCV-Python}
+Vision noden er udviklet i Python med det formål at identificere klodsernes placering.
+Dette gøres ved at finde centrum af de klodser, der identificeres ved brug af en oprettet maske.
+Den identificerer klodserne én farve af gangen og samler til sidst centrum for alle fundne klodser i et array.
+
+I vision noden findes 6 funktioner; \texttt{find\_brick\_centers}, \texttt{get\_from\_webcam}, \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers}.
+
+\texttt{find\_brick\_centers} er main funktionen til at finde centrum af klodserne, se bilag \vref{app:VisionNode} for fuld Python kode for noden.
+Funktionen starter med at definerer grænseværdierne for farverne.
+OpenCV-Python's range i HSV color spacet er ikke det samme som MATLAB's, hvorfor værdierne fundet i MATLAB skal konverteres:
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l}
+H		&	0-179\\
+\hline
+S		&	0-255\\
+\hline
+V		&	0-255\\
+\end{tabular}	
+\caption{Range for kanalerne H, S og V i OpenCV-Python}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+Farve	&	H			&	S			&	V	\\
+\hline
+Blå		&	92-141		&	76-255	&	102-255	\\
+Rød		&	161-14		&	76-255	&	0-255	\\
+Grøn	&	36-74		&	76-255	&	0-255	\\
+Gul		&	21-38		&	76-255	&	102-255	\\
+\end{tabular}	
+\caption{Grænseværdier konverteret fra MATLAB range til OpenCV-Python range og afrundet til heltal.}
+\end{table}
+
+Derudover skal H grænseværdierne for den røde klods deles op i to intervaller; 0-14 og 161-179.
+
+Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}, hvilken indlæser et billede fra webcamet og beskærer det så det kun er det relevante område der vises på billedet.
+Funktionen returnerer det beskårede billede.
+%FIGUR DER VISER RETUR BILLEDET!
+
+Billedet fra \texttt{get\_from\_webcam} konverteres fra color spacet BGR til HSV ved brug af OpenCV-Python funktionen \texttt{cv2.cvtCOLOR}.
+Efter konverteringen kaldes funktionerne\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers} på billedet for hver farve.
+
+\texttt{extract\_single\_color\_range} opretter en maske fjerner alle farver på billedet som ikke ligger i den specificerende grænseværdi, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Masker} for princippet bag en maske.
+Maksen oprettes ved brug af OpenCV-Pyhton funktionen \texttt{cv2.inRange}.
+Funktionen returnerer billedet, hvor kun farverne inden for den specificerede grænseværdi er synlige.
+%FIGUR DER VISER RETUR BILLEDET!
+
+\texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
+Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en close, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter.
+%FIGUR DER VISER RETUR BILLEDET!
+
+\texttt{contours} konverterer det returnerede billede fra \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV-Python funktionen \texttt{cv2.cvtColor}.
+Derefter identificerer den konturer på billedet ved brug af OpenCV-Python funktionen \texttt{cv2.findContours}.
+Funktionen returnerer disse konturer.
+%FIGUR DER VISER RETUR BILLEDET!
+
+\texttt{get\_centers} finder for hver kontur en firkantet repræsentation af konturen ved brug af OpenCV-Python funktionerne \texttt{cv2.arcLength} og \texttt{cv2.approxPolyDP} og finder derefter arealet af disse ved brug af OpenCV-Python funktionen \texttt{cv2.contourArea}.
+Hvis dette areal er større end 500 pixels ses den som en klods og et vægtet gennemsnit af områdets pixels (momentet) findes ved brug af OpenCV-funktionen cv2.moments.
+Centrum koordinaterne (række og kolonne i billedet) for momentet findes og returneres. 
+%FIGUR DER VISER RETUR BILLEDET!
+
+Da koordinatsættet, returneret fra \texttt{get\_centers}, er i pixels, en række og en kolonne i billedet, skal det konverteres til koordinater i CrustCrawlerens koordinatsystem.
+Se figur \vref{fig:ConvertCoordinate} for en illustration af de to koordinatsystemer.
+
+\figur{0.75}{ConvertCoordinate.pdf}{CrustCrawlerens koordinatsystem i forhold til række og kolonne koordinatsystemet for billedet.}{fig:ConvertCoordinate}
+
+For at identificere hvor mange pixels der er pr. enhed i CrustCrawlerens koordinatsystem udføres en test hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
+Derefter tages et billede med webcamet og klodsernes koordinater i pixels identificeres via. vision algoritmerne.
+Se bilag \vref{app:KoordinatsystemKonvertering} for den fulde test.
+Testen viste at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
+''x\_robot'' aksen og ''row'' aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
+Derfor trækkes pixel koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
+Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordinatsystem for alle klodser identificeret af vision aloritmerne.
+
+
+
+
+
+
+
+
+
+
+
+
