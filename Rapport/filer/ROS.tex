@@ -1,10 +1,21 @@
 \chapter{Robot Operating System (ROS)}\label{chap:ROS}
+%%%%%%%%%% ROS framework %%%%%%%%%%
 \section{ROS framework}
-Ros står for Robot Operatin System, som er et open-source system. Det kan være svært at skrive software programmer for robotter, da udviklingen af robotter er stigende og de kommer i forskellige former og størrelser. De forskellige robotter kan have varierende hardware, hvilket resulterer i at genbrug af software ikke altid er en mulighed. Derfor har robotforsker/ingeniør igennem tiden udviklet mange forskellige framworks, som kan håndtere de enkelte robotter. Da dette er ekstremt uhensigtsmæssig og kan føre til at skulle omskrive kode igen og igen, har robotingeniør udviklet et framework, som kan håndtere disse udfordringer inden for robot området. ROS frameworket blev udviklet i 2007, og er et samlet produkt af kompromiser og prioriteringer, som blev valgt i desginfasen. Selvom ROS framewroket blev udviklet som en samlet løsning, så har frameworket dets begrænsninger og derfor er det måske ikke det bedste framework til udvikling af software for robotter. Dokumentation ” ROS: an open-source Robot Operating System” mener, at der ikke nødvendigvis findes et framework, som er det bedste for hver enkelt robot. ROS bliver hele tiden forbedret, samtidig med at der kommer flere robotter til, og derfor er det et aldrig færdig framework. \newline
+ROS står for Robot Operating System, som er et open-source system.
+Det kan være svært at skrive softwareprogrammer for robotter, da udviklingen af robotter er stigende og de kommer i forskellige former og størrelser.
+De forskellige robotter kan have varierende hardware, hvilket resulterer i at genbrug af software ikke altid er en mulighed.
+Derfor har robotforskerer og ingeniører igennem tiden udviklet mange forskellige frameworks, som kan håndtere de enkelte robotter.
+Da dette er ekstremt uhensigtsmæssig og kan føre til at skulle omskrive kode igen og igen, har robotingeniører udviklet et framework, som kan håndtere disse udfordringer inden for robotområdet.
+ROS frameworket blev udviklet i 2007, og er et samlet produkt af kompromiser og prioriteringer, som blev valgt i desginfasen.
+Selvom ROS framewroket blev udviklet som en samlet løsning, så har frameworket dets begrænsninger og derfor er det måske ikke det bedste framework til udvikling af software for robotter.
+Dokumentation ''ROS: an open-source Robot Operating System'' mener, at der ikke nødvendigvis findes et framework, som er det bedste for hver enkelt robot.
+ROS bliver hele tiden forbedret, samtidig med, at der kommer flere robotter til, og derfor er det et framework der aldrig bliver færdigt.
+
+%%%%%%%%%% Grundlæggende principper %%%%%%%%%%
 \section{Grundlæggende principper}
 Filosofien for ROS og de mest almindelige funktioner er vist på figuren nedenfor.
 \figur{1}{ROSfilo_figur}{ROS design kriterier}{fig:ROSfilo_figur}
-Frameworket er designet efter nedenstående kriterier. 
+Frameworket er designet efter følgende kriterier:
 \begin{itemize}  
 \item Peer-to-peer
 \item Tools-based 
@@ -12,17 +23,39 @@ Frameworket er designet efter nedenstående kriterier.
 \item Thin
 \item Free and Open-Source\ldots 
 \end{itemize}
-\textbf{Peer to peer (P2P):} Et system som benytter sig af ROS bruger en række processer på et bredt antal af forskellige host, som er forbundet runtime i en peer-to-peer topologi. De processer som bruges består i form a noder, hvor det kan opdelse således at én node udføre én handling. På store robotter, som bruges i indrustien, er der typsik onboard maskiner som er forbundet igennem ethernet. Dette netværk er ''bridget'' (så det har mulighed for at kommunikere) gennem trådløs LAN til en offboard maskine der anvender et vission system eller voice recognition. ROS P2P har ikke en central server, og der kan det undgås at on- og offboard maskiner vil medføre stor data trafik, og dermed gøre den trådløse forbindelse langsom pga. af de informationer der bliver pushed og lageret i subnettet. På nedenstående figur ses hvordan P2P visuelt fungere. 
+\textbf{Peer to peer (P2P):}
+Et system som benytter sig af ROS bruger en række processer på et bredt antal af forskellige host, som er forbundet runtime i en peer-to-peer topologi.
+De processer som bruges består i form af noder, hvor det kan opdeles således, at én node udfører én handling. På store robotter, som bruges i indrustien, er der typsik onboard maskiner som er forbundet igennem ethernet.
+Dette netværk er ''bridget'' (så det har mulighed for at kommunikere) gennem trådløs LAN til en offboard maskine der anvender et vision system eller voice recognition.
+ROS P2P har ikke en central server, og der kan det undgås at on- og offboard maskiner vil medføre stor data trafik, og dermed gøre den trådløse forbindelse langsom pga. af de informationer der bliver pushed og lageret i subnettet.
+På figur \ref{fig:ROS_konfiguration_figur} ses hvordan P2P visuelt fungere. 
 \figur{1}{ROS_konfiguration_figur}{ROS netværks konfiguration}{fig:ROS_konfiguration_figur}
-\textbf{Tool-based:} For at kunne håndtere komplesiteten af ROS er der valgt at bruge et microkernel design. Designet er bygget således, at et stort nummer af mindre værktøjselementer er brugt til at bygge ROS komponenterne. Dette design er blevet valgt frem for at bruge en monolitisk udvikling og runtime miljø. Disse små værktøjer kan alt fra at navigere i source koden til at sætte konfigurations paramenterne osv.\newline
+\textbf{Tool-based:} For at kunne håndtere kompleksiteten af ROS, er der valgt at bruge et microkernel design.
+Designet er bygget således, at et stort antal af mindre værktøjselementer er brugt til at bygge ROS komponenterne.
+Dette design er blevet valgt frem for at bruge en monolitisk udvikling og runtime miljø.
+Disse små værktøjer kan alt fra at navigere i source koden til at sætte konfigurations paramenterne osv.\\
 \newline
-\textbf{Multi-lingual:} Multi-lingual gør at ROS er et programmeringssprog, som supporterer 4 forskellige sprog. Disse sprog er C++, Python, Octave, LISP. Grundet at ROS supporter disse forskellige programmeringssprog, gør at ROS i sig selv er let anvendeligt for de fleste programmør, og derfor taler det til et bedre publikum. For at supportere cross-language, anvender ROS en simpel sprog neutralt interface (IDL) for at beskrive beskeder, der sendes igennem modulerne. IDL anvender en kort tekst fil til at beskrive felterne af hver enkelt besked og tillader en sammensætning af beskeder. Dette ses på figuren nedenfor.
+\textbf{Multi-lingual:} Multi-lingual gør, at ROS er et programmeringssprog, som supporterer 4 forskellige sprog.
+Disse sprog er C++, Python, Octave, LISP.
+At ROS supporter disse forskellige programmeringssprog gør, at ROS i sig selv er let anvendeligt for de fleste programmører, og derfor taler det til et bedre publikum.
+For at supportere cross-language, anvender ROS en simpel sprog neutralt interface (IDL) for at beskrive beskeder, der sendes igennem modulerne.
+IDL anvender en kort tekst fil til at beskrive felterne af hver enkelt besked og tillader en sammensætning af beskeder.
+Dette ses på figur \ref{fig:IDEmessage_figur}.
 \figur{0.6}{IDEmessage_figur}{IDE message file}{fig:IDEmessage_figur}
-Det endelige resultat kan beskrives som at ROS udgør et programmeringssprog, hvor der er mulighed for at blande de forskellige programmeringssprog på kryds og tværs som der ønskes. \newline
+ROS udgør altså et programmeringssprog, hvor der er mulighed for at blande de forskellige programmeringssprog på kryds og tværs som der ønskes.\\
 \newline
-\textbf{Thin:} Mange af de robotsoftwareprojekter består af mange forskellige drivers og algoritmer, som kan bruges uden for det egentlige projekt. Derfor er ROS designet til at være så ”tyndt” som overhovedet muligt. Dette skyldes, at der ikke skal være for mange begrænsninger, som kan udelukke andre robot frameworks til at arbejde sammen med ROS. ROS arbejder derfor let med andre robotframeworks. Når der importeres ROS i ens projekt anvender ROS nogle forskellige imports af enkeltstående biblioteker, som har en minimal afhængighed til ROS. ROS genbruger kode fra de forskellige open-source projekter, som for eksempel vision algoritmen fra OpenCV.\newline
+\textbf{Thin:} Mange robotsoftwareprojekter består af mange forskellige drivers og algoritmer, som kan bruges uden for det egentlige projekt.
+Derfor er ROS designet til at være så ”tyndt” som overhovedet muligt.
+Dette skyldes, at der ikke skal være for mange begrænsninger, som kan udelukke andre robot frameworks til at arbejde sammen med ROS.
+ROS arbejder derfor let med andre robotframeworks.
+Når der importeres ROS i ens projekt anvender ROS nogle forskellige imports af enkeltstående biblioteker, som har en minimal afhængighed til ROS.
+ROS genbruger kode fra de forskellige open-source projekter, som for eksempel vision algoritmen fra OpenCV.\\
 \newline
-\textbf{Free and Open-Source: }ROS er fri tilgængelig og kan benyttes af alle der ønsker det. Dog har ROS alligevel nogle værktøjer, som er lukket for den alemen bruger, og kræver en linces for at får adgang til.
+\textbf{Free and Open-Source:}
+ROS er frit tilgængeligt og kan benyttes af alle, der ønsker det.
+Dog har ROS alligevel nogle værktøjer, som er lukket for den almene bruger, og kræver en licens for at få adgang dertil.
+
+%%%%%%%%%% ROS virkemåde %%%%%%%%%%
 \section{ROS virkemåde}
 De grundlæggende begreber for ROS implementationen er:
 \begin{itemize}  

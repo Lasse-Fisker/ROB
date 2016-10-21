@@ -1,25 +1,27 @@
 \chapter{Systembeskrivelse}\label{chap:Systembeskrivelse}
-Nedenstående beskriver systemet, der er valgt til projektet.
- 
-Det foreslåede system er et spejlingssystem, der er i stand til at genkende en række klodser med kendte farver, og derefter flytte dem fra deres oprindelige position til en spejler position på den anden side af robottens arbejdsområde. 
+Det foreslåede system er et spejlingssystem, der er i stand til at genkende en række klodser med kendte farver, og derefter flytte dem fra deres oprindelige position til en spejlet position på den anden side af CrustCrawleren arbejdsområde. 
 
 Før spejling klargøres et mønster bestående af klodser med klare, ensartede, farver på det dertilhørende opstillingsareal (A).
 Systemet vil derefter påbegynde spejlingen af det fremlagte mønster, blot spejlvendt, på det tilstødende spejlingssareal (B).
 
-Ved færdig spejling vil robotten bevæge sig til en neutral position og påbegynde
-afslutningssignalet, et håndtryk. Robotten bevæger sig til midten af dens arbejdsareal og afventer, at brugeren giver den hånden. Robotten vil derefter returnere til neutral position. \figur{1}{Opgavebeskrivelse_Robotfigur}{Systemillustration}{fig:Systemillustration}
+Ved færdig spejling vil CrustCrawleren bevæge sig til en neutral position og påbegynde afslutningssignalet, et håndtryk.
+CrustCrawleren bevæger sig til midten af dens arbejdsareal og afventer, at brugeren giver den hånden.
+Robotten vil derefter returnere til neutral position.
+\figur{1}{Opgavebeskrivelse_Robotfigur}{Systemillustration}{fig:Systemillustration}
+\newpage
 
 %%%%%%%%%% Hardware %%%%%%%%%%
 \section{Hardware}\label{sec:Hardware}
-Systemet indeholder vision recognition i form af et fastmonteret kamera, der anvendes til at
-analysere det eksisterende mønster og til at udregne de påkrævede koordinater, som robotten skal navigere til. 
+Systemet indeholder vision genkendelse i form af et fastmonteret webcam fra D-link, der anvendes til at analysere det eksisterende mønster og til at udregne de påkrævede koordinater, som robotten skal navigere til. 
+Udover dette anvendes en tryksensor, en strain gauge FSR\textsuperscript{\textregistered} Model 402 Short Tail, til at detektere, hvorvidt et objekt er holdt fast af robotten eller ej, ved at måle det tryk, som denne udøver på den givne overflade.
+Tryksensoren er tilsluttet en microcontoller; Arduino Uno.
 
-Udover dette anvendes en tryksensor til at detektere, hvorvidt et objekt er holdt fast af robotten eller ej, ved at måle det tryk, som denne udøver på den givne overflade. Tryksensoren er tilsluttet en Arduino microcontoller.
+CrustCrawlerens eksisterende aktuator anvendes til at manipulere de påkrævede objekter.
 
-Robottens eksisterende aktuator anvendes til at manipulere de påkrævede objekter.
 %%%%%%%%%% Software %%%%%%%%%%
 \section{Software}\label{sec:Software}
-
-Til programmering af Arduino microcontrolleren anvendes et subset af C samt Rosserial biblioteket. Dette gøres gennem Arduino IDE'et.
-Programmet til at kontrollere robotten er skrevet i python, hvor ROSPY biblioteket er blevet brugt til at styre frameworket ROS. Programmet afvikles fra et linux miljø.
+Til programmering af Arduino microcontrolleren anvendes et subset af C samt Rosserial biblioteket.
+Dette gøres gennem Arduino IDE'et.
+Programmet til at kontrollere robotten er skrevet i Python, hvor ROSPY biblioteket er blevet brugt til at styre frameworket ROS.
+Programmet afvikles fra et Linux miljø.
 Til programmering af Vision systemet, er dele af OpenCV-Python biblioteket blevet anvendt. 

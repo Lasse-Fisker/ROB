@@ -1,8 +1,21 @@
 \chapter{Diskussion}\label{chap:Diskussion}
-Systemet anvender i dets nuværende form publisher / suscriber idiomet til kommunikation mellem komponenter. Dette medfører, at det er op til de enkelte noder at afgøre, hvornår det er mest hensigtsmæssigt at publisere deres data. Dette medfører en del unødvendig kommunikation, og i visse tilfælde mulighed for fejl og manglende data. 
-For at imødegå dette kunne clienter istedet være implementeret. På denne måde ville vision-og tryknoderne have fungeret som clienter, på samme måde som robotten. Dette ville tillade os at forebede om data fra clienter udelukkende på de tidspunkter vi har brug for det. Dette kunne anvendes ved vision, til at spørge om billeder af arbejdsområdet eller til at spørge om tryk fra sensoren. 
+Systemet anvender i dets nuværende form publisher / suscriber idiomet til kommunikation mellem komponenter.
+Dette medfører, at det er op til de enkelte noder at afgøre, hvornår det er mest hensigtsmæssigt at publisere deres data.
+Dette medfører en del unødvendig kommunikation, og i visse tilfælde mulighed for fejl og manglende data. 
+For at imødegå dette kunne clienter istedet være implementeret.
+På denne måde ville vision-og tryknoderne have fungeret som clienter, på samme måde som CrustCrawleren.
+Dette ville tillade os at forebede om data fra clienter udelukkende på de tidspunkter vi har brug for det.
+Dette kunne anvendes ved vision, til at spørge om billeder af arbejdsområdet eller til at spørge om tryk fra sensoren. 
 
-En anden features, der kunne implementeres er en art fail-safe, i form af et time-out, mens robotten afventer håndtryk ved end arbejde. Hvis den ikke modtager godkendelse, kunne den genstarte arbejdet, og derved ville en manglende godkendelse indikere, at arbejdet ikke endnu er udført.
-I det nuværende system udgår svingende lysstyrke-og kvalitet en væsentlig fejlkilde. En fastmonteret lyskilde ville derfor reducere potentielle fejl markant.
-Der foreligger flere oplagte udvidelsesmulighed i systemet. Først og fremmest ville være; genkendelse af vilkårlige former og vilkårlige farver samt farvekalibrering.
-En anden udvidelsesmulighed ville være at implementere muligheden for at gribe objekter, der befinder sig i en vilkårlig vinkel i forhold til robotten. Grunden til, at dette ikke er implementeret i det nuværende system er, at det kun ville være virksomt i en meget lille del af robottens arbejdsområde, da denne kun opererer med fire frihedsgrader. Den ville derfor kun kunne gribe klodser fra vilkårlige vinkler i det område, hvor den kan nærme sig dem vinkelret fra oven. 
+En anden features, der kunne implementeres er en art fail-safe, i form af et time-out, mens CrustCrawleren afventer håndtryk ved end arbejde.
+Hvis den ikke modtager godkendelse, kunne den genstarte arbejdet, og derved ville en manglende godkendelse indikere, at arbejdet ikke endnu er udført.
+
+I det nuværende system udgår svingende lysstyrke-og kvalitet en væsentlig fejlkilde.
+En fastmonteret lyskilde ville derfor reducere potentielle fejl markant.
+
+Der foreligger flere oplagte udvidelsesmulighed i systemet.
+Først og fremmest ville være; genkendelse af vilkårlige former og vilkårlige farver samt farvekalibrering.
+
+En anden udvidelsesmulighed ville være at implementere muligheden for at gribe objekter, der befinder sig i en vilkårlig vinkel i forhold til CrustCrawleren.
+Grunden til, at dette ikke er implementeret i det nuværende system er, at det kun ville være virksomt i en meget lille del af CrustCrawlerens arbejdsområde, da denne kun opererer med fire frihedsgrader.
+Den ville derfor kun kunne gribe klodser fra vilkårlige vinkler i det område, hvor den kan nærme sig dem vinkelret fra oven. 
