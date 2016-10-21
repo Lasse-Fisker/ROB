@@ -155,24 +155,13 @@ while not rospy.is_shutdown():
             print "Error"
         rate.sleep()
 \end{lstlisting}
-funktionen find_brick_centers() kaldes og der bliver returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
+funktionen find\_brick\_centers() kaldes og der bliver returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
 Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
 Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
 
 %%%%%%%%%% Robot system %%%%%%%%%%
 \section{Robot system}
-\subsection{Invers kinematik}
-Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal lave
-en matematisk conventering fra koordinatsæt til de vinkle laves.\newline
-Først skal længderne af robottens links bestemmes:
-\figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
-Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
-\figur{0.2}{q1}{Formel for q1}{fig:q1}
-derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
-\figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
-Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
-
 \subsection{Links og joints}
 Robotten består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
 
@@ -195,10 +184,21 @@ Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
 1		&	$\theta$1			&	16.8			&	0			&	90\\
 2		&	$\theta$2			&	0			&	17.31		&	0\\
 3		&	$\theta$3			&	0			&	0			&	90\\
-4		&	$\theta$4			&	23.5			&	0			&	0\\
+4		&	$\theta$4			&	20		&	0			&	0\\
 \end{tabular}	
 \caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
 \end{table}
+
+\subsection{Invers kinematik}
+Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal lave
+en matematisk conventering fra koordinatsæt til de vinkle laves.\newline
+Først skal længderne af robottens links bestemmes:
+\figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
+Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
+\figur{0.2}{q1}{Formel for q1}{fig:q1}
+derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
+\figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
+Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
 
 
 
