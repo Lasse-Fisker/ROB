@@ -8,7 +8,7 @@ def VisionPublisher():
     
     pub = rospy.Publisher('Coordinates', String, queue_size=10)
     rospy.init_node('VisionPublisher', anonymous=True)
-    rate = rospy.Rate(1) # 10hz
+    rate = rospy.Rate(1) # 1hz
     while not rospy.is_shutdown():
         try:
             bricks = find_brick_centers()

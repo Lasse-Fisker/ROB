@@ -127,6 +127,37 @@ Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordi
 
 %%%%% Vision node %%%%%
 \subsection{Vision node}
+For at Robotten kan vide hvor klodserne er, skal den have et x,y koordinat på klodsernes centrum.
+Derfor er der blevet lavet en ROS node publisher som publishere koordinaterne.
+Nedenunder ses kode for ROS noden som publishere koordinaterne \newline
+\begin{lstlisting}[language=python]
+pub = rospy.Publisher('Coordinates', String, queue_size=10)
+rospy.init_node('VisionPublisher', anonymous=True)
+rate = rospy.Rate(1) # 1hz
+\end{lstlisting}
+Først bliver en ROS publisher lavet, på topic'et "Coordinates" og data typen på messagen er string.
+Derefter bliver en ROS node lavet med navnet "VisionPublisher". anonymous=true betyder at der kan ikke være flere med sammen navn.
+rate blivere initialiseret til 1 hz, dvs at der bliver publisheret hvert sekund. \newline
+\begin{lstlisting}[language=python]
+while not rospy.is_shutdown():
+        try:
+            bricks = find_brick_centers()
+            
+            if len(bricks) != 0:        
+                coords_str = "%f,%f"%(bricks[0], bricks[1])
+            else:
+                coords_str = "%f,%f"%(0, 0)          
+            pub.publish(coords_str)
+            
+            print("Test af coords_str")
+            print(coords_str)
+        except:
+            print "Error"
+        rate.sleep()
+\end{lstlisting}
+funktionen find_brick_centers() kaldes og der bliver returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
+Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
+Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
 %%%%%%%%%% Robot system %%%%%%%%%%
 \section{Robot system}
