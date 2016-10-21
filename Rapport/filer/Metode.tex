@@ -4,10 +4,10 @@
 \section{Vision system}
 Vision systemet i dette projekt har til formål at finde positionen af hver klods, der skal flyttes af CrustCrawleren.
 Dette gøre ved brug af billeder taget med et webcam monteret ca. 1 m over det bord, CrustCrawleren er monteret på.
-Dette gøres ved at oprette en maske, der fjerner alt på billederne undtagen klodserne der skal identificeres.
-Masken oprettes ved at lede efter farver inden for fastsatte grænseværdier og fjerne farver der ikke ligger inden for disse.
-MATLAB applikationen Color Thresholder bruges til at bestemme hvilket colorspace der skal arbejdet i og hvilke grænseværdier der identificerer klodserne.
-Til udvikling af vision noden i Python bruges funktioner fra OpenCV-Python, som indeholder algoritmer relateret til computer vision.
+For at finde positionerne af klodserne oprettes en maske, der fjerner alt på billederne undtagen klodserne med en bestemt farve.
+Masken oprettes ved at lede efter farver inden for fastsatte grænseværdier og fjerne farver, der ikke ligger inden for disse.
+MATLAB applikationen Color Thresholder bruges til at bestemme hvilket colorspace der skal arbejdes i og hvilke grænseværdier der identificerer klodserne.
+Til udvikling af vision noden i Python bruges funktioner fra OpenCV, som indeholder algoritmer relateret til computer vision.
 
 %%%%% MATLAB - Color Thresholder %%%%%
 \subsection{MATLAB - Color Thresholder}
@@ -20,7 +20,7 @@ Det vælges derfor at arbejde i color spacet HSV.
 
 \figur{0.75}{ColorThresholderColorSpace.pdf}{MATLAB's applikation Color Thresholder til identifikation af optimalt color space. Den røde firkant viser, hvor der er stor kontrast mellem klodser og bordplade.}{fig:ColorThresholderColorSpace}
 
-Color Thresholder bruges derefter til at finde grænseværdierne til hhv. H, S og V kanalerne, til identifikation af de forskelligt farvede klodser.
+Color Thresholder bruges derefter til at finde grænseværdierne til hhv. H, S og V kanalerne, til identifikation af de forskelligt farvede klodser, ved at ændre på H, S og V kanalerne.
 Figur \vref{fig:ColorThresholderBlue} er et eksempel på grænseværdierne til identifikation af den blå klods.
 
 \figur{1}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV.}{fig:ColorThresholderBlue}
@@ -51,15 +51,13 @@ Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødv
 
 %%%%% Vision med OpenCV-Python %%%%%
 \subsection{Vision med OpenCV-Python}
-Vision noden er udviklet i Python med det formål at identificere klodsernes placering.
+Vision funktionerne, \texttt{find\_brick\_centers}, \texttt{get\_from\_webcam},\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers}, er udviklet i Python med det formål at identificere klodsernes placering.
 Dette gøres ved at finde centrum af de klodser, der identificeres ved brug af en oprettet maske.
-Den identificerer klodserne én farve af gangen og samler til sidst centrum for alle fundne klodser i et array.
+Den identificerer klodserne én farve af gangen og samler til sidst centrum for alle fundne klodser for alle fire farver i et array.
 
-I vision noden findes 6 funktioner; \texttt{find\_brick\_centers}, \texttt{get\_from\_webcam}, \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers}.
-
-\texttt{find\_brick\_centers} er main funktionen til at finde centrum af klodserne, se bilag \vref{app:VisionNode} for fuld Python kode for noden.
+\texttt{find\_brick\_centers} er main funktionen til at finde centrum af klodserne, se bilag \vref{app:PythonKode} for fuld Python kode for vision funktionerne.
 Funktionen starter med at definerer grænseværdierne for farverne.
-OpenCV-Python's range i HSV color spacet er ikke det samme som MATLAB's, hvorfor værdierne fundet i MATLAB skal konverteres:
+OpenCV's range i HSV color spacet er ikke det samme som MATLAB's, hvorfor værdierne fundet i MATLAB skal konverteres:
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l}
@@ -94,25 +92,24 @@ Gul		&	21-38		&	76-255	&	102-255	\\
 
 Derudover skal H grænseværdierne for den røde klods deles op i to intervaller; 0-14 og 161-179.
 
-Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}, hvilken indlæser et billede fra webcamet og beskærer det så det kun er det relevante område der vises på billedet.
-Funktionen returnerer det beskårede billede.
+Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}, hvilken indlæser et billede fra webcamet og beskærer det, så kun det relevante område vises på billedet.
 
-Billedet fra \texttt{get\_from\_webcam} konverteres fra color spacet BGR til HSV ved brug af OpenCV-Python funktionen \texttt{cv2.cvtCOLOR}.
+Billedet fra \texttt{get\_from\_webcam} konverteres fra color spacet BGR til HSV ved brug af OpenCV funktionen \texttt{cv2.cvtCOLOR}.
 Efter konverteringen kaldes funktionerne\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image},\newline \texttt{contours} og \texttt{get\_centers} på billedet for hver farve.
 
-\texttt{extract\_single\_color\_range} opretter en maske fjerner alle farver på billedet som ikke ligger i den specificerende grænseværdi, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Masker} for princippet bag en maske.
-Maksen oprettes ved brug af OpenCV-Pyhton funktionen \texttt{cv2.inRange}.
+\texttt{extract\_single\_color\_range} opretter en maske fjerner alle farver på billedet som ikke ligger i den specificerende grænseværdi, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Masker} for en beskrivelse af princippet i en maske.
+Maksen oprettes ved brug af OpenCV funktionen \texttt{cv2.inRange}.
 Funktionen returnerer billedet, hvor kun farverne inden for den specificerede grænseværdi er synlige.
 
 \texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
-Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en close, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter.
+Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en \textit{close}, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Morphologi} for en beskrivelse af princippet i de morfologiske operationer.
 
-\texttt{contours} konverterer det returnerede billede fra\newline \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV-Python funktionen \texttt{cv2.cvtColor}.
-Derefter identificerer den konturer på billedet ved brug af OpenCV-Python funktionen \texttt{cv2.findContours}.
+\texttt{contours} konverterer det returnerede billede fra\newline \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV funktionen \texttt{cv2.cvtColor}.
+Derefter identificerer den konturer på billedet ved brug af OpenCV funktionen \texttt{cv2.findContours}.
 Funktionen returnerer disse konturer.
 
-\texttt{get\_centers} finder for hver kontur en firkantet repræsentation af konturen ved brug af OpenCV-Python funktionerne \texttt{cv2.arcLength} og \texttt{cv2.approxPolyDP} og finder derefter arealet af disse ved brug af OpenCV-Python funktionen \texttt{cv2.contourArea}.
-Hvis dette areal er større end 500 pixels ses den som en klods og et vægtet gennemsnit af områdets pixels (momentet) findes ved brug af OpenCV-funktionen cv2.moments.
+\texttt{get\_centers} finder for hver kontur en firkantet repræsentation af konturen ved brug af OpenCV funktionerne \texttt{cv2.arcLength} og \texttt{cv2.approxPolyDP} og finder derefter arealet af disse ved brug af OpenCV funktionen \texttt{cv2.contourArea}.
+Hvis dette areal er større end 500 pixels anses området som en klods og et vægtet gennemsnit af områdets pixels (momentet) findes ved brug af OpenCV cv2.moments.
 Centrum koordinaterne (række og kolonne i billedet) for momentet findes og returneres. 
 
 Da koordinatsættet, returneret fra \texttt{get\_centers}, er i pixels, en række og en kolonne i billedet, skal det konverteres til koordinater i CrustCrawlerens koordinatsystem.
@@ -120,13 +117,17 @@ Se figur \vref{fig:ConvertCoordinate} for en illustration af de to koordinatsyst
 
 \figur{0.75}{ConvertCoordinate.pdf}{CrustCrawlerens koordinatsystem i forhold til række og kolonne koordinatsystemet for billedet.}{fig:ConvertCoordinate}
 
-For at identificere hvor mange pixels der er pr. enhed i CrustCrawlerens koordinatsystem udføres en test hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
+For at identificere hvor mange pixels, der er pr. enhed i CrustCrawlerens koordinatsystem, udføres en test, hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
 Derefter tages et billede med webcamet og klodsernes koordinater i pixels identificeres via. vision algoritmerne.
 Se bilag \vref{app:KoordinatsystemKonvertering} for den fulde test.
 Testen viste at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
-''x\_robot'' aksen og ''row'' aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
+\textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
 Derfor trækkes pixel koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
 Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordinatsystem for alle klodser identificeret af vision aloritmerne.
+
+%%%%% Vision node %%%%%
+\subsection{Vision node}
+
 
 %%%%%%%%%% Robot system %%%%%%%%%%
 \section{Robot system}
@@ -233,6 +234,12 @@ Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og re
 	\texttt{rosrun rosserial\_python serial\_node.py /dev/ttyACM0 \_baud:=57600}
 	
 	De sidste to argumenter specificerer henholdsvis den port, som microcontrolleren befinder sig på, og den baud rate, som forbindelsen skal oprettes med.
+
+
+
+
+
+
 
 
 

@@ -1,12 +1,46 @@
 \chapter{Koordinatsystem konvertering}\label{app:KoordinatsystemKonvertering}
-(10,-10)(10.5,-11)
-(10,-15)(10.4,-15.6)
-(10,-20)(10,-20.7)
-(15,-15)(15.5,-15.8)
-(15,-10)(15.2,-10.6)
-(15,-20)(15.5,-20.7)
-(20,-20)(20.1,-20.7)
-(20,-10)(20.6,-10.3)
-(20,-15)(20.4,-15.4)
+For at identificere hvor mange pixels, der er pr. enhed i CrustCrawlerens koordinatsystem, udføres en test, hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
+Dette gøres ved at placere robotten i et koordinat f.eks. (10,10) og placere en klods netop der.
+Derefter placeres robotten et sted uden for billedet hvorefter webcamet tager et billede af den placerede klods.
+På dette billede udføres vision funktionerne  hvilke returnerer et punkt (række og kolonne) i billedet koordinatsystem.
+\textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
 
+For at finde hvor mange pixels der er pr. enhed i CrustCrawlerens x-akse laves følgende udregning:
+\begin{equation}
+	x_{forhold}=\frac{295-row}{x}
+\end{equation}
+Da \textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet trækkes pixel koordinatets rækkeværdi fra højden af billedet (295 pixels) for at vende aksen om.
+For at finde hvor mange pixels der er pr. enhed i CrustCrawlerens y-akse laves følgende udregning:
+\begin{equation}
+	y_{forhold}=\frac{column}{y}
+\end{equation}
 
+Nedenstående er en tabel over resultaterne:
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c}
+CrustCrawler koordinater (x,y)	&	Billede koordinater (kolonne,række)	& Forhold\\
+\hline
+(10,-10)	&	(206,95)		&	(8.9,9.5)\\
+(10,-15)	&	(203,131)	&	(9.2,8.7)\\
+(10,-20)	&	(204,185)	&	(9.1,9.3)\\
+(15,-15)	&	(165,139)	&	(8.7,9.2)\\
+(15,-10)	&	(158,95)		&	(9.1,9.5)\\
+(15,-20)	&	(159,176)	&	(9.1,8.8)\\
+(20,-20)	&	(110,178)	&	(9.3,8.9)\\
+(20,-10)	&	(117,85)		&	(8.9,8.5)\\
+(20,-15)	&	(116,132)	&	(9.0,8.8)\\
+\end{tabular}	
+\caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
+\end{table}
+\newpage
+Ud fra resultaterne i tabellen herover udregnes middelværdien for antal pixels pr. enheder i CrustCrawlerens koordinatsystem i x- og y- akser:
+\begin{equation}
+	mid_x=\frac{8.9+9.2+9.1+8.7+9.1+9.1+9.3+8.9+9.0}{9}=9.0
+\end{equation}
+
+\begin{equation}
+	mid_y=\frac{9.5+8.7+9.3+9.2+9.5+8.8+8.9+8.5+8.8}{9}=9.0
+\end{equation}
+
+Der er derfor 9 pixels pr. enhed i CrustCrawlerens koordinatsystem på begge akser.

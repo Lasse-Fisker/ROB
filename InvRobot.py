@@ -129,9 +129,9 @@ def mirrorCube(xy):
     time.sleep(time1)
 
     #grab brick. While pressure is low enough, increase grabber position until brick is secured.
-    while grabberPressure < 700:
+    while grabberPressure < 600:
         print "grabber pressure is: %d" % grabberPressure
-        grabber_pos += 0.3
+        grabber_pos += 0.4
         RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
 
     #rotate - to air low
@@ -168,27 +168,21 @@ def mirrorCube(xy):
     RobotDo(top, not_rotated, grabber_pos)
     time.sleep(2)
 
-def RobotLowFive():
+def RobotHandshake():
 
     x = 28
     y = 0
-    z = 40
+    z = 30
     not_rotated = 0
-    rotated = 1.5
+    not_grapped = 0
     top = invkin([0, 0, 54.1])
-    i = 0    
+    
+    RobotDo(invkin([x, y, z]),not_rotated,not_grapped)
 
-    dur = rospy.Duration(1)
+    while grabberPressure < 700:
+        pass
 
-    RobotDo(top, rotated, 0)
-    time.sleep(0.5)
-    RobotDo(top, not_rotated, 0)
-
-    while i < 31:
-        RobotDo(invkin([x, y, z-i]), not_rotated, 0)
-        i += 10
-
-    RobotDo(top, not_rotated, 0)
+    RobotDo(top, not_rotated, not_grapped)
 
 # setup subscriber for pressure sensor
 def setupGrabberPressureSensor():
