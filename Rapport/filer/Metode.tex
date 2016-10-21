@@ -1,14 +1,15 @@
 \chapter{Metode}\label{chap:Metode}
 \section{main}
+\subsection{flow af main}
 Dette afsnit beskriver robotten funktion i forhold til opgavebeskrivelsen samt beskrivning af kodningen af main.
 robotten starter med at gå til udgangspunktet (robotten står lige op i luften). derefter tages et billede af arbejdsområdet af vision.
-Derefter bliver billede manipuleret med, så der findes centrum på alle klodserne som er indenfor arbejdsområdet. Koordinaterne blevet sendt til robotten hvor, så robotten spejler klodsen over på dubklikeringsområdet. Hvis der ikke flere klodser er, går robotten ud i en fast position hvor den afventer en tryk i grabberen
-og så afslutter programmet \newline
+Derefter bliver billede manipuleret med, så der findes centrum på alle klodserne som er indenfor arbejdsområdet. Koordinaterne blevet sendt til robotten hvor, så robotten spejler klodsen over på dubklikeringsområdet. Hvis der ikke flere klodser er, går robotten ud i en fast position hvor den afventer en tryk i grabberen og så afslutter programmet \newline
 nedenunder ses et flow chart af programmet:
 \figur{1}{Flowchart}{Flow chart main}{fig:Flowchart}
+\subsection{Koden af main}
 Main starter med at initialisere de 3 noder: InvRobot, VisionPublisher og grabber\_check\_pressure.
-
-
+derefter Subscribes på VisionPublisher og grabber\_check\_pressure, så programmet får værdierne af de 2 topics.
+Derefter 
 Indenunder ses et sekvens diagram af main programmet:
 \figur{1}{MainSequenceDiagram}{Main sekvens diagram}{fig:MainSequenceDiagram}
 
