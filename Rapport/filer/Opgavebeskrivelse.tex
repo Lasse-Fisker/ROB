@@ -1,5 +1,5 @@
 \chapter{Opgavebeskrivelse}\label{chap:Opgavebeskrivelse}
-I faget ITROB1 er der blevet stillet en opgave om, at skrive et program, som skal kunne styre den mekaniske robotarm også kaldet CrustCrawler. Selve opgaven blev stillet meget fri, og derfor var det op til gruppen, at bestemme hvordan denne skulle løses. De eneste krav til opgaven var at der skulle oprettes en forbindelse mellem roboten og den tilhørende webcam. Dertil skulle der også oprettes to seperate noder, hvilket vil gøre at noget af CrustCrawlerens funktionalitet bliv kørt asynkront. \newline
-Det blev bestemt af gruppen, at CrustCrawler skulle kunne flytter klodser fra en position til den inverse position. For at kunne inkludere kameraet (webcam) bliver dette brugt til at finde klodsernes start position. Grundet klodserne har forskellige farver kan kameraet via nogle grænseværdier skelne de forskellige klodser fra hinanden, og derved finde deres positioner. CrustCrawleren får disse koordinater og samler klodsen op. Via inverse kinematik regning bliver den inverse position fundet. CrustCrawleren lægger klodsen på den ny fundne position og retunerer til udgangspunktet. 
-
-\figur{1}{Opgavebeskrivelse_Robotfigur}{ Robot Figur}{fig:Opgavebeskrivelse_Robotfigur}
+Som afslutning på faget ITROB1 udfærdiges et projekt. Rammerne omkring dette projekt var, at robotarmen Crustcrawler, samt at en art vision skulle anvendes. Udover dette var det eneste formelle krav, at systemet skulle bestå af minimum to ROS noder. 
+Projektets emne var frit for gruppen, så længe ovenstående krav blev opfyldt. 
+Ved projektets afslutning forventes det, at en fungerende prototype på systemet er realiseret. Udover dette fungerer denne rapport som dokumentation af projektet. 
+\figur{0.5}{CrustcrawlerRobot}{ Robot Figur}{fig:CrustcrawlerRobot}
