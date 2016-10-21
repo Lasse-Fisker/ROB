@@ -12,3 +12,16 @@ Frameworket er designet efter nedenstående kriterier.
 \item Thin
 \item Free and Open-Source\ldots 
 \end{itemize}
+\textbf{Peer to peer (P2P):} Et system som benytter sig af ROS bruger en række processer på et bredt antal af forskellige host, som er forbundet runtime i en peer-to-peer topologi. De processer som bruges består i form a noder, hvor det kan opdelse således at én node udføre én handling. På store robotter, som bruges i indrustien, er der typsik onboard maskiner som er forbundet igennem ethernet. Dette netværk er ''bridget'' (så det har mulighed for at kommunikere) gennem trådløs LAN til en offboard maskine der anvender et vission system eller voice recognition. ROS P2P har ikke en central server, og der kan det undgås at on- og offboard maskiner vil medføre stor data trafik, og dermed gøre den trådløse forbindelse langsom pga. af de informationer der bliver pushed og lageret i subnettet. På nedenstående figur ses hvordan P2P visuelt fungere. 
+\figur{1}{ROS_konfiguration_figur}{ROS netværks konfiguration}{fig:ROS_konfiguration_figur}
+
+\textbf{Tool-based:} For at kunne håndtere komplesiteten af ROS er der valgt at bruge et microkernel design. Designet er bygget således, at et stort nummer af mindre værktøjselementer er brugt til at bygge ROS komponenterne. Dette design er blevet valgt frem for at bruge en monolitisk udvikling og runtime miljø. Disse små værktøjer kan alt fra at navigere i source koden til at sætte konfigurations paramenterne osv.\newline
+\newline
+\textbf{Multi-lingual:} Multi-lingual gør at ROS er et programmeringssprog, som supporterer 4 forskellige sprog. Disse sprog er C++, Python, Octave, LISP. Grundet at ROS supporter disse forskellige programmeringssprog, gør at ROS i sig selv er let anvendeligt for de fleste programmør, og derfor taler det til et bedre publikum. For at supportere cross-language, anvender ROS en simpel sprog neutralt interface (IDL) for at beskrive beskeder, der sendes igennem modulerne. IDL anvender en kort tekst fil til at beskrive felterne af hver enkelt besked og tillader en sammensætning af beskeder. Dette ses på figuren nedenfor.
+\figur{1}{IDEmessage_figur}{IDE message file}{fig:IDEmessage_figur}
+Det endelige resultat kan beskrives som at ROS udgør et programmeringssprog, hvor der er mulighed for at blande de forskellige programmeringssprog på kryds og tværs som der ønskes. \newline
+\newline
+\textbf{Thin:} Mange af de robotsoftwareprojekter består af mange forskellige drivers og algoritmer, som kan bruges uden for det egentlige projekt. Derfor er ROS designet til at være så ”tyndt” som overhovedet muligt. Dette skyldes, at der ikke skal være for mange begrænsninger, som kan udelukke andre robot frameworks til at arbejde sammen med ROS. ROS arbejder derfor let med andre robotframeworks. Når der importeres ROS i ens projekt anvender ROS nogle forskellige imports af enkeltstående biblioteker, som har en minimal afhængighed til ROS. ROS genbruger kode fra de forskellige open-source projekter, som for eksempel vision algoritmen fra OpenCV.\newline
+\newline
+\textbf{Free and Open-Source: }ROS er fri tilgængelig og kan benyttes af alle der ønsker det. Dog har ROS alligevel nogle værktøjer, som er lukket for den alemen bruger, og kræver en linces for at får adgang til. 
+
