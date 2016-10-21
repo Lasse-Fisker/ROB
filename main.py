@@ -14,7 +14,6 @@ from std_msgs.msg import String
 
 from InvRobot import *
 from findBricks import *
-#from listener import *
 
 visionCoor = []
 
