@@ -11,6 +11,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from trajectory_msgs.msg import JointTrajectory
 import math
 import time
+from std_msgs.msg import Int32
 
 grabberPressure = 0;
 
@@ -57,6 +58,8 @@ def invkin(xyz):
 class RobotExecute:
 
     N_JOINTS = 5
+
+    #constructur
     def __init__(self,server_name, angles, rotate, gripper):
         self.client = actionlib.SimpleActionClient(server_name, FollowJointTrajectoryAction)
 
@@ -71,16 +74,20 @@ class RobotExecute:
         joint_positions = [
         [angles[0], angles[1], angles[2], rotate, gripper]
         ]
+
         # initial duration
         dur = rospy.Duration(1)
 
-        # construct a list of joint positions by calling invkin for each xyz point
+        # construct a list of joint positions
         for p in joint_positions:
-            jtp = JointTrajectoryPoint(positions=p,velocities=[0.5]*self.N_JOINTS ,time_from_start=dur)
+            jtp = JointTrajectoryPoint(positions=p,velocities=[0.5]*self.N_JOINTS, time_from_start=dur)
             dur += rospy.Duration(5)
             self.joint_positions.append(jtp)
-
+        
+        # create joint trajectory
         self.jt = JointTrajectory(joint_names=self.names, points=self.joint_positions)
+
+        # create goal
         self.goal = FollowJointTrajectoryGoal( trajectory=self.jt, goal_time_tolerance=dur+rospy.Duration(2) )
 
     def send_command(self):
@@ -106,36 +113,59 @@ def mirrorCube(xy):
     air1 = 15
     air2 = 30
     table = 6
-    Grapped = 0.8
-    NotGrapped = 0
-    NotRotated = 0
-    Rotated = 1.5
+    grabber_pos = 0
+    not_rotated = 0
+    rotated = 1.5
     top = invkin([0, 0, 54.1])
     time1 = 1
     time2 = 0.5
 
-    RobotDo(invkin([xy[0], xy[1], air2]), NotRotated, NotGrapped)
+    #in air
+    RobotDo(invkin([xy[0], xy[1], air2]), not_rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], xy[1], table]), NotRotated, NotGrapped)
+
+    #to table
+    RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], xy[1], table]), NotRotated, Grapped)
-    time.sleep(time1)
-    RobotDo(invkin([xy[0], xy[1], air1]), Rotated, Grapped)
+
+    #grab brick. While pressure is low enough, increase grabber position until brick is secured.
+    while grabberPressure < 700:
+        print "grabber pressure is: %d" % grabberPressure
+        grabber_pos += 0.3
+        RobotDo(invkin([xy[0], xy[1], table]), not_rotated, grabber_pos)
+
+    #rotate - to air low
+    RobotDo(invkin([xy[0], xy[1], air1]), rotated, grabber_pos)
     time.sleep(time2)
-    RobotDo(invkin([xy[0], xy[1], air2]), Rotated, Grapped)
+
+    #to air 
+    RobotDo(invkin([xy[0], xy[1], air2]), rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], -xy[1], air2]), Rotated, Grapped)
+
+    #to mirrored X Y
+    RobotDo(invkin([xy[0], -xy[1], air2]), rotated, grabber_pos)
     time.sleep(time2)
-    RobotDo(invkin([xy[0], -xy[1], air1]), Rotated, Grapped)
+
+    # lower
+    RobotDo(invkin([xy[0], -xy[1], air1]), rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], -xy[1], table]), NotRotated, Grapped)
+
+    #table un rotate
+    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], -xy[1], table]), NotRotated, NotGrapped)
+
+    #release
+    grabber_pos = 0
+    RobotDo(invkin([xy[0], -xy[1], table]), not_rotated, grabber_pos)
     time.sleep(time1)
-    RobotDo(invkin([xy[0], -xy[1], air1]), NotRotated, NotGrapped)
+
+    # to air
+    RobotDo(invkin([xy[0], -xy[1], air1]), not_rotated, grabber_pos)
     time.sleep(time2)
-    RobotDo(invkin([xy[0], -xy[1], air2]), NotRotated, NotGrapped)
-    RobotDo(top, NotRotated, NotGrapped)
+
+    # higher air
+    RobotDo(invkin([xy[0], -xy[1], air2]), not_rotated, grabber_pos)
+    RobotDo(top, not_rotated, grabber_pos)
     time.sleep(2)
 
 def RobotLowFive():
@@ -143,32 +173,30 @@ def RobotLowFive():
     x = 28
     y = 0
     z = 40
-    NotGrapped = 0
-    NotRotated = 0
-    Rotated = 1.5
+    not_rotated = 0
+    rotated = 1.5
     top = invkin([0, 0, 54.1])
     i = 0    
 
     dur = rospy.Duration(1)
 
-    RobotDo(top, Rotated, NotGrapped)
+    RobotDo(top, rotated, 0)
     time.sleep(0.5)
-    RobotDo(top, NotRotated, NotGrapped)
+    RobotDo(top, not_rotated, 0)
 
     while i < 31:
-        RobotDo(invkin([x, y, z-i]), NotRotated, NotGrapped)
+        RobotDo(invkin([x, y, z-i]), not_rotated, 0)
         i += 10
 
-    RobotDo(top, NotRotated, NotGrapped)
+    RobotDo(top, not_rotated, 0)
 
 # setup subscriber for pressure sensor
-def setupGrabberPressureSensor()
-    rospy.Subscriber("grabber_pressure", Int, handleReadPressure)
+def setupGrabberPressureSensor():
+    rospy.Subscriber("grabber_pressure", Int32, handleReadPressure)
 
 # callback method for pressure sensor
-def handleReadPressure(val) {
-    grabberPressure = val;
+def handleReadPressure(val):
+    global grabberPressure
+    grabberPressure = val.data
 
     #debug
-    print "grabber pressure is: %d" % val
-}
