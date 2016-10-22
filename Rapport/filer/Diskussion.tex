@@ -1,16 +1,16 @@
 \chapter{Diskussion}\label{chap:Diskussion}
-Systemet anvender i dets nuværende form publisher / suscriber idiomet til kommunikation mellem komponenter.
-Dette medfører, at det er op til de enkelte noder at afgøre, hvornår det er mest hensigtsmæssigt at publisere deres data.
+Systemet anvender i dets nuværende form Publisher / Subscriber idiomet til kommunikation mellem komponenter.
+Dette medfører, at det er op til de enkelte noder at afgøre, hvornår det er mest hensigtsmæssigt at publicere deres data.
 Dette medfører en del unødvendig kommunikation, og i visse tilfælde mulighed for fejl og manglende data. 
-For at imødegå dette kunne clienter istedet være implementeret.
-På denne måde ville vision-og tryknoderne have fungeret som clienter, på samme måde som CrustCrawleren.
-Dette ville tillade os at forebede om data fra clienter udelukkende på de tidspunkter vi har brug for det.
+For at imødegå dette kunne klienter istedet være implementeret.
+På denne måde ville vision-og tryknoderne have fungeret som klienter, på samme måde som CrustCrawleren.
+Dette ville tillade os at forebede om data fra klienter udelukkende på de tidspunkter vi har brug for det.
 Dette kunne anvendes ved vision, til at spørge om billeder af arbejdsområdet eller til at spørge om tryk fra sensoren. 
 
-En anden features, der kunne implementeres er en art fail-safe, i form af et time-out, mens CrustCrawleren afventer håndtryk ved end arbejde.
+En anden feature, der kunne implementeres, er en art fail-safe, i form af et time-out, mens CrustCrawleren afventer håndtryk ved end arbejde.
 Hvis den ikke modtager godkendelse, kunne den genstarte arbejdet, og derved ville en manglende godkendelse indikere, at arbejdet ikke endnu er udført.
 
-I det nuværende system udgår svingende lysstyrke-og kvalitet en væsentlig fejlkilde.
+I det nuværende system udgør svingende lysstyrke-og kvalitet en væsentlig fejlkilde.
 En fastmonteret lyskilde ville derfor reducere potentielle fejl markant.
 
 Der foreligger flere oplagte udvidelsesmulighed i systemet.

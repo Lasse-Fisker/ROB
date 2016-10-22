@@ -247,10 +247,10 @@ Dette mål sendes afsted til robotten, hvorefter der afventes resultat.
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
 \newpage
 \section{Pressure sensor system}
-For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvend. 
+For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvendt. 
 
 \subsection{FSR 402 - Tryksensor}
-Til at måle trykket, er en Interlink FSR 402 Short anvendt. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
+Til måling af tryk bruges en Interlink FSR 402 Short. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
 
 \figur{0.30}{FSRWiringDiagram.png}{Diagram over tilkobling af tryksensor til microcontroller}{fig:FSRWiringDiagram}
 
@@ -258,7 +258,7 @@ Som det ses på figur \ref{fig:FSRWiringDiagram}, er sensoren på det ene ben ko
 
 \subsection{Arduino - Microcontroller}
 Som microcontroller er en Arduino UNO blevet anvendt. Valget faldt på denne, da den er let at anvende sammen med analoge sensorer, samt let at integrere med ROS, da der findes et officielt bibliotek til kommunikation mellem Arduino og ROS. 
-Rosserial biblioteket anvendes til at oprette en node og publisere målinger. Til dette anvendes en nodehandler og en publisher. 
+Rosserial biblioteket anvendes til at oprette en node og publicere målinger. Til dette anvendes en nodehandler og en Publisher. 
 
 \begin{lstlisting}[language=C]
 
@@ -281,8 +281,8 @@ void setup()
 
 \end{lstlisting}
 
-Læsning af sensoren og publisering af den data er meget simpel. Der foretages en læsning med \texttt{analogread()} metoden, der er en standard Arduino metode. Parametret der gives med er blot den pin, der foretages en læsning på. 
-Denne læsning sendes med som data attributten på den message, der publiseres. 
+Læsning af sensoren og publicering af den læste data er meget simpel. Der foretages en læsning med \texttt{analogread()} metoden, der er en standard Arduino metode. Parametret der gives med er blot den pin, der foretages en læsning på. 
+Denne læsning sendes med som data-attributten på den message, der publiceres. 
 
 \begin{lstlisting}[language=C]
 
@@ -298,10 +298,10 @@ void publish(int val) {
 
 \end{lstlisting}
 
-For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er der sat 10 millisekunders delay mellem hver læsning og publisering af data. 
+For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er der sat ti millisekunders delay mellem hver læsning og publicering af data. 
 
 \subsection{Kommunikation med ROS}
-Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
+Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for, at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
 
 	\texttt{rosrun rosserial\_python serial\_node.py /dev/ttyACM0 \_baud:=57600}
 	
