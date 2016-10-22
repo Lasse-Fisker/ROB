@@ -1,13 +1,13 @@
 \chapter{Robot Operating System (ROS)}\label{chap:ROS}
 %%%%%%%%%% ROS framework %%%%%%%%%%
 \section{ROS framework}
-ROS står for Robot Operating System, som er et open-source system.
-Det kan være svært at skrive softwareprogrammer for robotter, da udviklingen af robotter er stigende og de kommer i forskellige former og størrelser.
-De forskellige robotter kan have varierende hardware, hvilket resulterer i at genbrug af software ikke altid er en mulighed.
-Derfor har robotforskerer og ingeniører igennem tiden udviklet mange forskellige frameworks, som kan håndtere de enkelte robotter.
-Da dette er ekstremt uhensigtsmæssig og kan føre til at skulle omskrive kode igen og igen, har robotingeniører udviklet et framework, som kan håndtere disse udfordringer inden for robotområdet.
-ROS frameworket blev udviklet i 2007, og er et samlet produkt af kompromiser og prioriteringer, som blev valgt i desginfasen.
-Selvom ROS framewroket blev udviklet som en samlet løsning, så har frameworket dets begrænsninger og derfor er det måske ikke det bedste framework til udvikling af software for robotter.
+Robot Operating System, herefter benævnt ROS, er et open-source framework til styring af robotter.
+Det kan være svært at skrive software for robotter, da udviklingen af robotter er stigende og de kommer i forskellige former og størrelser.
+De forskellige robotter kan have varierende hardware, hvilket resulterer i, at genbrug af software ikke altid er en mulighed.
+Derfor har robotforskerer-og ingeniører historisk set udviklet mange forskellige frameworks til håndtering af de enkelte robotter.
+Dette var ekstremt uhensigtsmæssig, da det var svært at genbruge kode og svært for programmører at gå fra én robot til en anden uden at lære nye frameworks.
+ROS frameworket blev udviklet i 2007 som en løsning på dette problem. Det er et produkt af kompromiser og prioriteringer, som blev valgt i designfasen.
+Selvom ROS framewroket blev udviklet som en samlet løsning, så har frameworket dets begrænsninger og er derfor ikke altid det optimale valg af software til robotter.
 Dokumentation ''ROS: an open-source Robot Operating System'' mener, at der ikke nødvendigvis findes et framework, som er det bedste for hver enkelt robot.
 ROS bliver hele tiden forbedret, samtidig med, at der kommer flere robotter til, og derfor er det et framework der aldrig bliver færdigt.
 
@@ -24,36 +24,36 @@ Frameworket er designet efter følgende kriterier:
 \item Free and Open-Source\ldots 
 \end{itemize}
 \textbf{Peer to peer (P2P):}
-Et system som benytter sig af ROS bruger en række processer på et bredt antal af forskellige host, som er forbundet runtime i en peer-to-peer topologi.
-De processer som bruges består i form af noder, hvor det kan opdeles således, at én node udfører én handling. På store robotter, som bruges i indrustien, er der typsik onboard maskiner som er forbundet igennem ethernet.
-Dette netværk er ''bridget'' (så det har mulighed for at kommunikere) gennem trådløs LAN til en offboard maskine der anvender et vision system eller voice recognition.
-ROS P2P har ikke en central server, og der kan det undgås at on- og offboard maskiner vil medføre stor data trafik, og dermed gøre den trådløse forbindelse langsom pga. af de informationer der bliver pushed og lageret i subnettet.
-På figur \ref{fig:ROS_konfiguration_figur} ses hvordan P2P visuelt fungere. 
+Et ROS system anvender en række processer på et bredt antal af forskellige hosts, som er forbundet runtime i en peer-to-peer topologi.
+Disse processer består af noder, hvor hver node udfører én specifik handling. På store industrielle robotter, er der typisk onboard maskiner som er forbundet med ethernet.
+Dette netværk er ''bridget'', med mulighed for at kommunikere trådløst til en offboard maskine, der anvender et vision system eller voice recognition.
+ROS P2P har ikke en central server, og der kan det undgås, at on- og offboard maskiner vil medføre stor data trafik, og dermed gøre den trådløse forbindelse langsom pga. af de informationer, der bliver pushed og lageret i subnettet.
+På figur \ref{fig:ROS_konfiguration_figur} ses det grafisk, hvordan P2P fungere. 
 \figur{1}{ROS_konfiguration_figur}{ROS netværks konfiguration}{fig:ROS_konfiguration_figur}
 \textbf{Tool-based:} For at kunne håndtere kompleksiteten af ROS, er der valgt at bruge et microkernel design.
-Designet er bygget således, at et stort antal af mindre værktøjselementer er brugt til at bygge ROS komponenterne.
+Designet er opbygget således, at et stort antal af mindre værktøjselementer er brugt til ROS komponenterne.
 Dette design er blevet valgt frem for at bruge en monolitisk udvikling og runtime miljø.
 Disse små værktøjer kan alt fra at navigere i source koden til at sætte konfigurations paramenterne osv.\\
 \newline
-\textbf{Multi-lingual:} Multi-lingual gør, at ROS er et programmeringssprog, som supporterer 4 forskellige sprog.
-Disse sprog er C++, Python, Octave, LISP.
-At ROS supporter disse forskellige programmeringssprog gør, at ROS i sig selv er let anvendeligt for de fleste programmører, og derfor taler det til et bedre publikum.
-For at supportere cross-language, anvender ROS en simpel sprog neutralt interface (IDL) for at beskrive beskeder, der sendes igennem modulerne.
-IDL anvender en kort tekst fil til at beskrive felterne af hver enkelt besked og tillader en sammensætning af beskeder.
+\textbf{Multi-lingual:} Multi-lingual gør, at ROS er et programmeringssprog, som supporterer flere forskellige sprog.
+Disse sprog er i skrivende stund C++, Python, Octave, LISP.
+At ROS supporter disse forskellige programmeringssprog gør, at ROS i sig selv er let at anvende for de fleste programmører, og derfor appelere et bredere publikum.
+For at supportere cross-language, anvender ROS et simpel sprogneutralt interface, \textit{IDL}, til at beskrive beskeder, der sendes gennem modulerne.
+\textit{IDL} anvender en kort tekstfil til at beskrive felterne af hver enkelt besked, og tillader en sammensætning af beskeder.
 Dette ses på figur \ref{fig:IDEmessage_figur}.
 \figur{0.6}{IDEmessage_figur}{IDE message file}{fig:IDEmessage_figur}
-ROS udgør altså et programmeringssprog, hvor der er mulighed for at blande de forskellige programmeringssprog på kryds og tværs som der ønskes.\\
+ROS udgør altså en platform, hvor der er mulighed for at blande de fornævnte programmeringssprog på kryds og tværs som der ønskes uden at kompromittere den samlede funktionalitet.\\
 \newline
-\textbf{Thin:} Mange robotsoftwareprojekter består af mange forskellige drivers og algoritmer, som kan bruges uden for det egentlige projekt.
-Derfor er ROS designet til at være så ”tyndt” som overhovedet muligt.
-Dette skyldes, at der ikke skal være for mange begrænsninger, som kan udelukke andre robot frameworks til at arbejde sammen med ROS.
-ROS arbejder derfor let med andre robotframeworks.
-Når der importeres ROS i ens projekt anvender ROS nogle forskellige imports af enkeltstående biblioteker, som har en minimal afhængighed til ROS.
-ROS genbruger kode fra de forskellige open-source projekter, som for eksempel vision algoritmen fra OpenCV.\\
+\textbf{Thin:} Mange projekter inden for robotteknologi består af mange forskellige drivers og algoritmer, som kan bruges uden for det egentlige projekt.
+Derfor er ROS designet til at være så \textit{tyndt} som overhovedet muligt.
+Dette skyldes, at der ikke skal være for mange begrænsninger, som kan udelukke andre robot frameworks fra at arbejde sammen med ROS.
+ROS er derfor let at integrere med andre robotframeworks.
+Når ROS importeres i ens projekt, anvendes forskellige imports af enkeltstående biblioteker, som har en minimal afhængighed til ROS.
+Der genbruges også kode fra eksisterende open-source projekter, som for eksempel Vision algoritmen fra OpenCV.\\
 \newline
 \textbf{Free and Open-Source:}
-ROS er frit tilgængeligt og kan benyttes af alle, der ønsker det.
-Dog har ROS alligevel nogle værktøjer, som er lukket for den almene bruger, og kræver en licens for at få adgang dertil.
+ROS er frit tilgængeligt, og kan benyttes af alle, der ønsker det.
+Dog har ROS værktøjer, der er lukkede for den almene bruger, og kræver en licens for at få adgang dertil.
 
 %%%%%%%%%% ROS virkemåde %%%%%%%%%%
 \section{ROS virkemåde}
@@ -64,13 +64,13 @@ De grundlæggende begreber for ROS implementationen er:
 \item Topics
 \item Services
 \end{itemize}
-\textbf{Nodes:} Noder er de processer, som udfører en databehandling. For at kunne kommunikerer med mange noder, er det praktisk at bruge P2P kommunikationsmetoden. På den måde kommunikerer noder gennem beskeder, og kan køre asynkron fra hinanden, og derved opdeldes arbejdsbyrden fra den enekelt tråd.\newline
+\textbf{Nodes:} Noder er de processer, som udfører en databehandling. For at kunne kommunikerer med mange noder, er det praktisk at bruge P2P kommunikationsmetoden. På den måde kommunikerer noder gennem beskeder, og kan køre asynkront i forhold til hinanden. Derved opdeles arbejdsbyrden fra den enkelt tråd.\newline
 \newline
-\textbf{Messages:} Messages er en strengt type datastruktur, hvor primative standarts typer som integer, floation point, booelan osv. er supportet. Disse beskeder bliver benyttet af noderne til at kommunikerer med hinanden. Beskederne kan sammensættes af flere forskellige beskeder, og derved oprette en message queue.\newline
+\textbf{Messages:} Messages er en datastruktur, hvor primitive typer,  såsom integers, floating points, booelans, stings osv. er understøttede. Udover disse primitive typer som brugerdefinerede typer også afsendes, så længe disse er registrerede i det kørende ROS system. Disse beskeder bliver benyttet af noderne til at kommunikerer med hinanden. Beskederne kan sammensættes af flere forskellige beskeder, og derved oprette en message queue.\newline
 \newline
-\textbf{Topic:} Når en node udfører en kommando, sender den en besked afsted. Denne besked bliver så published på et givent topic, hvor beskeden kan indeholde den ønskede type, som er supportet. Når noden har published en besked, lkan en anden node i systemet så subcribe på lige præcis den besked, som den første node sendte afsted. Derved kan den sidste nævnte node modtage de data, som den første node sender afsted med beskeden. Dette er et public subscribe forhold. Grunden til dette forhold mellem noder er, at den node som publicher og den node som subscriber er ikke afhængige af hinanden, eller de er ikke opmærksomme på deres eksistens, og derved opstår der ingen komplikationer mellem disse noder.\newline
-Nedenfor ses en figur over hvordan kommunikationen mellem de to noder fungerer.
+\textbf{Topic:} Når en node udfører en kommando, sender den en besked afsted. Denne besked bliver så published på et givent topic. Når noden har published en besked, kan en anden node i systemet subcribe på dette Topic. Denne node vil da modtage de afsendte data. Dette er et publisher / subscribe forhold. Grunden til dette forhold mellem noder er, at den node som publisher, og den node som subscriber er ikke afhængige af hinanden, og har derfor en lav kobling. Derved opstår der færre komplikationer mellem disse noder.\newline
+Nedenfor ses en figur over hvordan kommunikationen mellem to noder fungerer.
 \figur{0.6}{ROStopic_figur}{ROS Topic}{fig:ROStopic_figur}
-\textbf{Service:} Ved publish og subcribe forholdet er dette en meget fleksibel form for kommunikation også kaldet broadcasting. Denne broadcasting er asynkront, og køre derfor uafhængigt af ''main'' tråden. En service er defineret af et string navn og et par af strengte typer beskeder. Den ene bruges som en request og den anden bruges som en response. Services anvender srv filer, som er kompileret i source koden ved et ROS-client bibliotek.
+\textbf{Service:} Publish / subcribe forholdet er en meget fleksibel form for kommunikation også kaldet broadcasting. Denne broadcasting er asynkront, og køre derfor uafhængigt af ''main'' tråden. En service er defineret af et navn og typefast besked. Den ene bruges som en request og den anden bruges som en response. Services anvender srv filer, som er kompileret i source koden ved et ROS-client bibliotek.
 
 \textbf{Måske afsnittet med Grundlæggende Principper skal som bilag?}

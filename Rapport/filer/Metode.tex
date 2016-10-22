@@ -1,27 +1,30 @@
 \chapter{Metode}\label{chap:Metode}
 %%%%%%%%%% System system %%%%%%%%%%
 \section{Systemflow}
-CrustCrawleren starter med at gå til en defineret udgangsposition hvor den står lodret.
-Derefter tages et billede med webcamet, som er monteret ca. 1 meter over bordet som CrustCrawleren er monteret på.
-Vision systemet udføres på billedet og finder centrum på klodserne på billedet inden for arbejdsområdet.
-Koordinaterne blevet sendt til CrustCrawleren, hvorefter den bevæger sig til denne position.
+CrustCrawleren påbegynder arbejdsprocessen ved at gå til en defineret udgangsposition. Denne er lodret opretstående.
+Derefter tages et billede med kameraet, der er monteret ca. én meter over bordet som CrustCrawleren er monteret på.
+Vision systemet analyserer billedet og finder centrum på de opstillede klodser inden for arbejdsområdet.
+Positionen sendes herefter til CrustCrawleren, hvorefter den bevæger sig til dinne.
 Når CrustCrawleren har nået positionen aflæses trykket på tryksensoren.
 Sålænge trykket ikke overstiger en fast grænseværdi fortsætter grabberen med at lukke sig.
-Så snart trykket når grænseværdien bevæger robotten sig til spejlingspositionen i dubklikeringsområdet og åbner grabberen.
-Dette fortsætter indtil der ikke findes flere klodser i arbejdsområdet.
-Når CrustCrawleren ikke registrerer flere klodser bevæger den sig til en håndtryksposition, hvor den afventer en tryk i grabberen hvorefter programmet afsluttes.
-Figur \vref{fig:Flowchart} viser et flowchart diagram over flowet i main funktionen.
+Så snart trykket når grænseværdien bevæger robotten sig til spejlingspositionen i spejlingsområdet og åbner grabberen.
+Denne process itereres, indtil der ikke kan findes klodser i arbejdsområdet.
+Når CrustCrawleren ikke registrerer flere klodser bevæger den sig til en håndtryksposition, hvor den afventer et tryk i grabberen, hvorefter programmet afsluttes.
+Figur \vref{fig:Flowchart} viser et flowchartdiagram over handlingsforløbet i main funktionen.
 \figur{1}{Flowchart}{Flow chart main}{fig:Flowchart}
-
+ 
 %%%%%%%%%% Main system %%%%%%%%%%
 \section{Main system}
-Main starter med at initialisere de 3 noder: InvRobot, VisionPublisher og grabber\_check\_pressure.
-derefter Subscribes på VisionPublisher og grabber\_check\_pressure, så programmet får værdierne af de 2 topics.
-Derefter 
-Indenunder ses et sekvens diagram af main programmet:
+I main tråden startes der med at initialisere og abonnere på VisionPublisher noden. Dette gøres i \texttt{setUpVisionCoordinates()} metoden. Der abonneres også på tryksensor node i \texttt{setupGrabberPressureSensor()} metoden.
+
+Efter dette anvendes \texttt{RobotDo} metoden til at flytte robotten til udgangspositionen. Robotten er nu klar til at påbegynde arbejdsprocessen. Dette gøres ved at kalde \texttt{main()} metoden.
+
+I \texttt{main()} metoden bestemmer en \textit{while} lykke, hvorvidt der fortsættes med at arbejde. Inden i lykken hentes koordinaterne. Hvis koordinaternes længde er over 0, og dermed findes, kaldes \texttt{mirrorCube(xy)} metoden med koordinaterne.
+Er længden på koordinaterne ikke over 0, afsluttes jobbet med at foretage håndtrykket. 
+
+Nedenfor ses et sekvensdiagram af main programmet:
 \figur{1}{MainSequenceDiagram}{Main sekvens diagram}{fig:MainSequenceDiagram}
 
-\textbf{Skriv færdigt...}
 
 %%%%%%%%%% Vision system %%%%%%%%%%
 \newpage
@@ -35,10 +38,10 @@ Til udvikling af vision noden i Python bruges funktioner fra OpenCV, som indehol
 
 %%%%% MATLAB - Color Thresholder %%%%%
 \subsection{MATLAB - Color Thresholder}
-MATLAB's  applikation Color Thresholder er blevet brugt til at bestemme, hvilket color space og hvilke grænseværdier, der er mest optimale til at identificere de farvede klodser med webcamet.
+MATLAB's  applikation Color Thresholder er anvendt til at bestemme, hvilket color space og hvilke grænseværdier, der er mest optimale til at identificere de farvede klodser med kameraet.
 
-I Color Thresholder indlæses et billede, taget med webcamet, hvorpå en klods af hver farve er repræsenteret.
-Valget af color space baseres på hvor klodserne adskiller sig mest fra bordpladen, da bordpladen skal fjernes med den oprettede maske.
+I Color Thresholder indlæses et billede, hvorpå en klods af hver farve er repræsenteret.
+Valget af color space baseres på, hvor klodserne adskiller sig mest fra bordpladen, da bordpladen skal fjernes med den oprettede maske.
 På figur \ref{fig:ColorThresholderColorSpace} ses det, at der i color spacet HSV (Hue, Saturation, Value) er størst kontrast mellem klodser og bordplade.
 Det vælges derfor at arbejde i color spacet HSV.
 
@@ -63,13 +66,13 @@ Gul		&	0.115-0.210	&	0.300-1.000	&	0.400-1.000\\
 \caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
 \end{table}
 
-Det ses på figur \vref{fig:ColorThresholderBlue}, at nogle områder uden for bordpladen ikke forsvinder helt ved denne segmentering, da de har farver, der ligger tæt på den blå klods'.
-Dette ville løses ved at beskære billedet således, at kun bordpladen vises på billedet.
-Derudover skal der kun identificeres klodser på højre side af CrustCrawleren, hvorfor billedet beskæres yderligere, så kun det interessante område er vises.
+Det ses på figur \vref{fig:ColorThresholderBlue}, at nogle områder uden for bordpladen ikke forsvinder fuldstændig ved denne segmentering, da de har farver, der ligger tæt på den blå klods'.
+Dette løses ved at beskære billedet således, at kun bordpladen vises på billedet.
+Derudover skal der kun identificeres klodser på højre side af CrustCrawleren, hvorfor billedet beskæres yderligere, så kun det relevante område vises.
 
-Figur \vref{fig:ColorThresholderResult} viser resultatet på MATLAB analysen, som beskærer billedet og identificerer klodser i de fire farver, blå, rød, grøn og gul.
+Figur \vref{fig:ColorThresholderResult} viser resultatet af MATLAB analysen, som beskærer billedet og identificerer klodser i de fire farver, blå, rød, grøn og gul.
 Se bilag \vref{app:MATLABVision} for script og funktioner brugt i analysen.
-Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødvendigt at implementere en grænseværdi for hvor store områder, der skal identificeres som klodser, da der er små områder, der ikke forsvinder helt ved segmenteringen.
+Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødvendigt at implementere en grænseværdi for, hvor store områder, der skal identificeres som klodser, da der er små områder, der ikke forsvinder helt ved segmenteringen.
 
 \figur{1}{ColorThresholderResult.pdf}{Resultat af MATLAB analysen}{fig:ColorThresholderResult}
 
@@ -77,10 +80,10 @@ Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødv
 \subsection{Vision med OpenCV-Python}
 Vision funktionerne, \texttt{find\_brick\_centers}, \texttt{get\_from\_webcam},\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers}, er udviklet i Python med det formål at identificere klodsernes placering.
 Dette gøres ved at finde centrum af de klodser, der identificeres ved brug af en oprettet maske.
-Den identificerer klodserne én farve af gangen og samler til sidst centrum for alle fundne klodser for alle fire farver i et array.
+Den identificerer klodserne, én farve af gangen, og samler til sidst centrum for alle fundne klodser for alle fire farver i et array.
 
 \texttt{find\_brick\_centers} er main funktionen til at finde centrum af klodserne, se bilag \vref{app:PythonKode} for fuld Python kode for vision funktionerne.
-Funktionen starter med at definerer grænseværdierne for farverne.
+Funktionen starter med at definere grænseværdierne for farverne.
 OpenCV's range i HSV color spacet er ikke det samme som MATLAB's, hvorfor værdierne fundet i MATLAB skal konverteres:
 \begin{table}[H]
 \centering
@@ -116,24 +119,24 @@ Gul		&	21-38		&	76-255	&	102-255	\\
 
 Derudover skal H grænseværdierne for den røde klods deles op i to intervaller; 0-14 og 161-179.
 
-Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}, hvilken indlæser et billede fra webcamet og beskærer det, så kun det relevante område vises på billedet.
+Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}. Denne indlæser et billede fra kameraet og beskærer det, så kun det relevante område vises på billedet.
 
 Billedet fra \texttt{get\_from\_webcam} konverteres fra color spacet BGR til HSV ved brug af OpenCV funktionen \texttt{cv2.cvtCOLOR}.
 Efter konverteringen kaldes funktionerne\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image},\newline \texttt{contours} og \texttt{get\_centers} på billedet for hver farve.
 
-\texttt{extract\_single\_color\_range} opretter en maske fjerner alle farver på billedet som ikke ligger i den specificerende grænseværdi, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Masker} for en beskrivelse af princippet i en maske.
+\texttt{extract\_single\_color\_range} opretter en maske og fjerner alle farver på billedet, som ikke ligger i den specificerende grænseværdi, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Masker} for en beskrivelse af princippet i en maske.
 Maksen oprettes ved brug af OpenCV funktionen \texttt{cv2.inRange}.
-Funktionen returnerer billedet, hvor kun farverne inden for den specificerede grænseværdi er synlige.
+Funktionen returnerer billedet, hvor kun farver inden for den specificerede grænseværdi er synlige.
 
-\texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
+Funktionen \texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
 Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en \textit{close}, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Morphologi} for en beskrivelse af princippet i de morfologiske operationer.
 
 \texttt{contours} konverterer det returnerede billede fra\newline \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV funktionen \texttt{cv2.cvtColor}.
 Derefter identificerer den konturer på billedet ved brug af OpenCV funktionen \texttt{cv2.findContours}.
 Funktionen returnerer disse konturer.
 
-\texttt{get\_centers} finder for hver kontur en firkantet repræsentation af konturen ved brug af OpenCV funktionerne \texttt{cv2.arcLength} og \texttt{cv2.approxPolyDP} og finder derefter arealet af disse ved brug af OpenCV funktionen \texttt{cv2.contourArea}.
-Hvis dette areal er større end 500 pixels anses området som en klods og et vægtet gennemsnit af områdets pixels (momentet) findes ved brug af OpenCV cv2.moments.
+Funktionen \texttt{get\_centers} finder, for hver kontur, en firkantet repræsentation af konturen ved brug af OpenCV funktionerne \texttt{cv2.arcLength} og \texttt{cv2.approxPolyDP} og finder derefter arealet af disse ved brug af OpenCV funktionen \texttt{cv2.contourArea}.
+Hvis dette areal er større end 500 pixels anses området som værende en klods og et vægtet gennemsnit af områdets pixels (momentet) findes ved brug af OpenCV cv2.moments.
 Centrum koordinaterne (række og kolonne i billedet) for momentet findes og returneres. 
 
 Da koordinatsættet, returneret fra \texttt{get\_centers}, er i pixels, en række og en kolonne i billedet, skal det konverteres til koordinater i CrustCrawlerens koordinatsystem.
@@ -141,18 +144,18 @@ Se figur \vref{fig:ConvertCoordinate} for en illustration af de to koordinatsyst
 
 \figur{0.75}{ConvertCoordinate.pdf}{CrustCrawlerens koordinatsystem i forhold til række og kolonne koordinatsystemet for billedet.}{fig:ConvertCoordinate}
 
-For at identificere hvor mange pixels, der er pr. enhed i CrustCrawlerens koordinatsystem, udføres en test, hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
-Derefter tages et billede med webcamet og klodsernes koordinater i pixels identificeres via. vision algoritmerne.
+For at identificere, hvor mange pixels, der er pr. enhed i CrustCrawlerens koordinatsystem, udføres en test, hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
+Derefter tages et billede med kameraet og klodsernes koordinater i pixels identificeres via. vision algoritmerne.
 Se bilag \vref{app:KoordinatsystemKonvertering} for den fulde test.
-Testen viste at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
+Testen viste, at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
 \textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
-Derfor trækkes pixel koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
+På grund af dette trækkes pixel-koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
 Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordinatsystem for alle klodser identificeret af vision aloritmerne.
 
 %%%%% Vision node %%%%%
 \subsection{Vision node}
-For at Robotten kan vide hvor klodserne er, skal den have et x,y koordinat på klodsernes centrum.
-Derfor er der blevet lavet en ROS node publisher som publishere koordinaterne.
+For at Robotten kan vide, hvor klodserne er, skal den have et x,y koordinat på klodsernes centrum.
+Derfor er en ROS node publisher som publishere koordinaterne konstrueret.
 Nedenunder ses kode for ROS noden som publishere koordinaterne \newline
 \begin{lstlisting}[language=python]
 pub = rospy.Publisher('Coordinates', String, queue_size=10)
@@ -179,7 +182,7 @@ while not rospy.is_shutdown():
             print "Error"
         rate.sleep()
 \end{lstlisting}
-funktionen find\_brick\_centers() kaldes og der bliver returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
+Funktionen \texttt{find\_brick\_centers()} kaldes, ogd returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
 Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
 Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
@@ -192,16 +195,14 @@ Robotten består af en række links og joints. Disse er bestemt vha. opmåling a
 
 \figur{1}{crustCrawlerLinks.png}{Figur over links på crustcrawler}{fig:crustCrawlerLinks}
 
-Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af 4 links.
-
-\textbf{Måske noget med frihedsgrader?}
+Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af fire links. Robottens base roterer. Derudover kan to led på robottens arm bøje. Slutteligt kan grabberen rotere. Det kan deraf udledes, at robotten består af fire revolute joints og dermed besidder fire frihedsgrader. Dette medfører visse begrænsninger i robottens arbejdsområde, da seks frihedsgrader er nødvendige for at opnå fuld frihed inden for arbejdsområdet.
 
 \subsection{Coordinate frames}
-Det at bestemme koordinat rammerne for robotten, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for robotten. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
+Til at bestemme koordinatrammerne for robotten, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for robotten. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
 
 \figur{0.60}{crustCrawlerCoordinateFrames.png}{Figur over coordinate frames på crustcrawler}{fig:crustCrawlerLinks}
 
-Med koordinat rammerne og informationer om links kan Denavit Hartenberg parametrene findes. 
+Med koordinatrammerne og informationer om links kan Denavit Hartenberg parametrene findes. 
 
 \begin{table}[H]
 \centering
@@ -213,40 +214,43 @@ Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
 3		&	$\theta$3			&	0			&	0			&	90\\
 4		&	$\theta$4			&	20		&	0			&	0\\
 \end{tabular}	
-\caption{Grænseværdier til identifikation af de fire farver, blå, rød, grøn og gul. MATLAB range 0-1.}
+\caption{DH parametre for CrustCrawler robotten.}
 \end{table}
 
-\textbf{Bilag med Denavit-Hartenberg teori?}
+For dybere forklaring af Denavit-Hartenberg parametre, se bilag, side \textbf{INDSÆT BILAG}
 
 \subsection{Invers kinematik}
-Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal lave
-en matematisk conventering fra koordinatsæt til de vinkle laves.\newline
+Robotten skal kunne bevæge sig hen til en given position ud fra et koordin	atsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal en matematisk konventering fra koordinatsæt til vinkler foretages.\newline
 Først skal længderne af robottens links bestemmes:
 \figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
 Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
 \figur{0.2}{q1}{Formel for q1}{fig:q1}
-derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
+Derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
 \figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
 Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
 
 \subsection{RobotExecute}
-Klassen \texttt{RobotExecute()} håndterer konstruktionen og afsendelsen af kommandoer til robotten. Dette gøres vha. ROSPY bibliotekets \texttt{SimpleActionClient}.
+Klassen \texttt{RobotExecute()} håndterer konstruktionen og afsendelsen af kommandoer til robotten. Det er denne klasse, der står for at igangsætte robottens bevægelser. Dette gøres vha. ROSPY bibliotekets \texttt{SimpleActionClient}.
 
-Først opbygges en liste af joint positions, der hver indeholde det enkelte joints position, en velocity samt tiden, der går fra start af kommandoen.
-Derefter lægges disse positioner ind i et joinTrajectory objekt, der udover disse indeholder navnene, der beskriver de enkelte joints).
+Først opbygges et array af navnene på de enkelte led. Derefter opbygges et array der indeholder de enkelte leds position bestående af de tre vinkler, et rotationsparameter samt et grabber pamameter.
+
+	Der itereres gennem dette array. For hver led position oprettes et \texttt{JointTrajectoryPoint} objekt.  Dette består af det enkelte leds position, en velocity samt tiden, der går fra start af kommandoen.
+	
+Derefter lægges disse positioner ind i et \texttt{joinTrajectory}objekt, der udover disse indeholder navnene, der beskriver de enkelte joints).
 Selve kommandoen til robotten består af et goal, der indeholder joinTrajectory objektet samt en tidstolerance.
 Dette mål sendes afsted til robotten, hvorefter der afventes resultat. 
 
 \textbf{Lidt mere gennemgang af hvad koden gør?}
+\textbf{MANGLER KODE INDSÆTTELSE}
 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
 \newpage
 \section{Pressure sensor system}
-For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvend. 
+For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvendt. 
 
 \subsection{FSR 402 - Tryksensor}
-Til at måle trykket, er en Interlink FSR 402 Short anvendt. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
+Til måling af tryk bruges en Interlink FSR 402 Short. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
 
 \figur{0.30}{FSRWiringDiagram.png}{Diagram over tilkobling af tryksensor til microcontroller}{fig:FSRWiringDiagram}
 
@@ -254,7 +258,7 @@ Som det ses på figur \ref{fig:FSRWiringDiagram}, er sensoren på det ene ben ko
 
 \subsection{Arduino - Microcontroller}
 Som microcontroller er en Arduino UNO blevet anvendt. Valget faldt på denne, da den er let at anvende sammen med analoge sensorer, samt let at integrere med ROS, da der findes et officielt bibliotek til kommunikation mellem Arduino og ROS. 
-Rosserial biblioteket anvendes til at oprette en node og publisere målinger. Til dette anvendes en nodehandler og en publisher. 
+Rosserial biblioteket anvendes til at oprette en node og publicere målinger. Til dette anvendes en nodehandler og en Publisher. 
 
 \begin{lstlisting}[language=C]
 
@@ -277,8 +281,8 @@ void setup()
 
 \end{lstlisting}
 
-Læsning af sensoren og publisering af den data er meget simpel. Der foretages en læsning med \texttt{analogread()} metoden, der er en standard Arduino metode. Parametret der gives med er blot den pin, der foretages en læsning på. 
-Denne læsning sendes med som data attributten på den message, der publiseres. 
+Læsning af sensoren og publicering af den læste data er meget simpel. Der foretages en læsning med \texttt{analogread()} metoden, der er en standard Arduino metode. Parametret der gives med er blot den pin, der foretages en læsning på. 
+Denne læsning sendes med som data-attributten på den message, der publiceres. 
 
 \begin{lstlisting}[language=C]
 
@@ -294,10 +298,10 @@ void publish(int val) {
 
 \end{lstlisting}
 
-For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er der sat 10 millisekunders delay mellem hver læsning og publisering af data. 
+For at få et kompromis mellem kontinuerlige data og spamming af beskeder, er der sat ti millisekunders delay mellem hver læsning og publicering af data. 
 
 \subsection{Kommunikation med ROS}
-Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
+Rosserial er som nævnt anvendt til kommunikation mellem microcontrolleren og resten af ROS systemet. Microcontrolleren skal dog stadig være sat til en pc, hvorpå en fuld ROS installation kører. Dette er nødvendigt, da Rosserial ikke i sig selv er en featurekomplet ROS installation, og derfor har brug for, at der fra pc siden initialeres en forbindelse til den. Dette gøres vha. følgende kommando. 
 
 	\texttt{rosrun rosserial\_python serial\_node.py /dev/ttyACM0 \_baud:=57600}
 	
