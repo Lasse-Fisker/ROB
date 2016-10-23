@@ -128,7 +128,7 @@ Efter konverteringen kaldes funktionerne\newline \texttt{extract\_single\_color\
 Maksen oprettes ved brug af OpenCV funktionen \texttt{cv2.inRange}.
 Funktionen returnerer billedet, hvor kun farver inden for den specificerede grænseværdi er synlige.
 
-Funktionen \texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
+Funktionen \texttt{threshold\_image} thresholder \textbf{(er det et fordansket ord?)} billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
 Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en \textit{close}, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Morphologi} for en beskrivelse af princippet i de morfologiske operationer.
 
 \texttt{contours} konverterer det returnerede billede fra\newline \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV funktionen \texttt{cv2.cvtColor}.
@@ -182,14 +182,14 @@ while not rospy.is_shutdown():
             print "Error"
         rate.sleep()
 \end{lstlisting}
-Funktionen \texttt{find\_brick\_centers()} kaldes, ogd returnet x,y kooridnater på alle klodserne der er på arbejdsområdet i en liste.
-Derefter bliver første og anden pladsen i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
+Funktionen \texttt{find\_brick\_centers()} kaldes, \textbf{ogd!!} returnet x,y kooridnater på alle klodserne, der er i arbejdsområdet, i en liste.
+Derefter bliver \textbf{første og anden pladsen!!!! kunne godt omskrives?} i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
 Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
 
 %%%%%%%%%% Robot system %%%%%%%%%%
 \newpage
 \section{Robot system}
-Skriv indledende tekst...
+Skriv indledende tekst... - er der nogen som har tænkt over dette eller? 
 \subsection{Links og joints}
 Robotten består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
 
@@ -220,7 +220,7 @@ Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
 For dybere forklaring af Denavit-Hartenberg parametre, se bilag, side \textbf{INDSÆT BILAG}
 
 \subsection{Invers kinematik}
-Robotten skal kunne bevæge sig hen til en given position ud fra et koordin	atsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal en matematisk konventering fra koordinatsæt til vinkler foretages.\newline
+Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal en matematisk konventering fra koordinatsæt til vinkler foretages.\newline
 Først skal længderne af robottens links bestemmes:
 \figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
 Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
@@ -242,6 +242,7 @@ Dette mål sendes afsted til robotten, hvorefter der afventes resultat.
 
 \textbf{Lidt mere gennemgang af hvad koden gør?}
 \textbf{MANGLER KODE INDSÆTTELSE}
+\textbf{Hvem laver dette? }
 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
