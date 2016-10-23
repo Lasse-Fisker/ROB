@@ -7,7 +7,7 @@ Vision systemet analyserer billedet og finder centrum på de opstillede klodser 
 Positionen sendes herefter til CrustCrawleren, hvorefter den bevæger sig til dinne.
 Når CrustCrawleren har nået positionen aflæses trykket på tryksensoren.
 Sålænge trykket ikke overstiger en fast grænseværdi fortsætter grabberen med at lukke sig.
-Så snart trykket når grænseværdien bevæger robotten sig til spejlingspositionen i spejlingsområdet og åbner grabberen.
+Så snart trykket når grænseværdien bevæger CrustCrawleren sig til spejlingspositionen i spejlingsområdet og åbner grabberen.
 Denne process itereres, indtil der ikke kan findes klodser i arbejdsområdet.
 Når CrustCrawleren ikke registrerer flere klodser bevæger den sig til en håndtryksposition, hvor den afventer et tryk i grabberen, hvorefter programmet afsluttes.
 Figur \vref{fig:Flowchart} viser et flowchartdiagram over handlingsforløbet i main funktionen.
@@ -15,12 +15,20 @@ Figur \vref{fig:Flowchart} viser et flowchartdiagram over handlingsforløbet i m
  
 %%%%%%%%%% Main system %%%%%%%%%%
 \section{Main system}
-I main tråden startes der med at initialisere og abonnere på VisionPublisher noden. Dette gøres i \texttt{setUpVisionCoordinates()} metoden. Der abonneres også på tryksensor node i \texttt{setupGrabberPressureSensor()} metoden.
+I main tråden startes der med at initialisere og abonnere på VisionPublisher noden, se bilag \vref{app:PythonKode} for fuld Python kode for main funktionen.
+Dette gøres i \texttt{setUpVisionCoordinates} funktionen.
+Der abonneres også på tryksensor noden i \texttt{setupGrabberPressureSensor} funktionen.
 
-Efter dette anvendes \texttt{RobotDo} metoden til at flytte robotten til udgangspositionen. Robotten er nu klar til at påbegynde arbejdsprocessen. Dette gøres ved at kalde \texttt{main()} metoden.
+Efter dette anvendes \texttt{RobotDo} funktionen til at flytte CrustCrawleren til udgangspositionen.
+CrustCrawleren er nu klar til at påbegynde arbejdsprocessen.
+Dette gøres ved at kalde \texttt{main} funktionen.
 
-I \texttt{main()} metoden bestemmer en \textit{while} lykke, hvorvidt der fortsættes med at arbejde. Inden i lykken hentes koordinaterne. Hvis koordinaternes længde er over 0, og dermed findes, kaldes \texttt{mirrorCube(xy)} metoden med koordinaterne.
-Er længden på koordinaterne ikke over 0, afsluttes jobbet med at foretage håndtrykket. 
+I \texttt{main} funktionen bestemmer en while-løkke, hvorvidt der fortsættes med at arbejde.
+While-løkken fortsætte sålænge jobbet er aktivt.
+I while-løkken hentes koordinaterne.
+Hvis koordinaternes længde er over 0, og dermed findes, kaldes \texttt{mirrorCube} metoden med koordinaterne.
+\texttt{mirrorCube} flytter klodsen til den spejlede position.
+Er længden på koordinaterne ikke over 0, flyttes CrustCrawleren til håndtrkspositionen hvor jobbet først afsluttes når tryksensoren modtager et tryk.
 
 Nedenfor ses et sekvensdiagram af main programmet:
 \figur{1}{MainSequenceDiagram}{Main sekvens diagram}{fig:MainSequenceDiagram}
@@ -36,7 +44,54 @@ Masken oprettes ved at lede efter farver inden for fastsatte grænseværdier og 
 MATLAB applikationen Color Thresholder bruges til at bestemme hvilket colorspace der skal arbejdes i og hvilke grænseværdier der identificerer klodserne.
 Til udvikling af vision noden i Python bruges funktioner fra OpenCV, som indeholder algoritmer relateret til computer vision.
 
+%%%%% Vision node %%%%%
+\subsection{Vision node}
+For at CrustCrawleren kan vide, hvor klodserne er, skal den have et x,y koordinat på klodsernes centrum.
+Derfor er en ROS node publisher, som publishere koordinaterne, konstrueret, se nedenstående kode for den fulde kode for vison noden.
+Først bliver en ROS publisher lavet, på topic'et \texttt{Coordinates} og data typen på messagen er string.
+Derefter bliver en ROS node lavet med navnet \texttt{VisionPublisher}.
+Publiceringsfrekvensen initialiseres til 1 hz, dvs. at der bliver publisheret hvert sekund. \newline
+Funktionen \texttt{find\_brick\_centers} kaldes, hvilken returnerer x,y koordinaterne på alle klodserne, der er i arbejdsområdet, i et array.
+Derefter bliver plads 0 og 1 i arrayet, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
+Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
+
+\begin{lstlisting}[language=Python]
+#!/usr/bin/env python
+
+import rospy
+from findBricks import *
+from std_msgs.msg import String
+
+def VisionPublisher():
+    
+    pub = rospy.Publisher('Coordinates', String, queue_size=10)
+    rospy.init_node('VisionPublisher', anonymous=True)
+    rate = rospy.Rate(1) # 1hz
+    while not rospy.is_shutdown():
+        try:
+            bricks = find_brick_centers()
+            
+            if len(bricks) != 0:        
+                coords_str = "%f,%f"%(bricks[0], bricks[1])
+            else:
+                coords_str = "%f,%f"%(0, 0)          
+            pub.publish(coords_str)
+            
+            print("Test af coords_str")
+            print(coords_str)
+        except:
+            print "Error"
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        VisionPublisher()
+    except rospy.ROSInterruptException:
+        pass
+\end{lstlisting}
+
 %%%%% MATLAB - Color Thresholder %%%%%
+\newpage
 \subsection{MATLAB - Color Thresholder}
 MATLAB's  applikation Color Thresholder er anvendt til at bestemme, hvilket color space og hvilke grænseværdier, der er mest optimale til at identificere de farvede klodser med kameraet.
 
@@ -50,7 +105,7 @@ Det vælges derfor at arbejde i color spacet HSV.
 Color Thresholder bruges derefter til at finde grænseværdierne til hhv. H, S og V kanalerne, til identifikation af de forskelligt farvede klodser, ved at ændre på H, S og V kanalerne.
 Figur \vref{fig:ColorThresholderBlue} er et eksempel på grænseværdierne til identifikation af den blå klods.
 
-\figur{1}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV.}{fig:ColorThresholderBlue}
+\figur{0.8}{ColorThresholderBlue.pdf}{Identifikation af blå klods i MATLAB's applikation Color Thresholder i color space HSV.}{fig:ColorThresholderBlue}
 
 For hver farve blev følgende grænseværdier identificeret (se bilag \vref{app:MATLABVision} for funktioner til identifikation af hver farve):
 \begin{table}[H]
@@ -77,6 +132,7 @@ Det ses også på figur \ref{fig:ColorThresholderResult}, at det vil være nødv
 \figur{1}{ColorThresholderResult.pdf}{Resultat af MATLAB analysen}{fig:ColorThresholderResult}
 
 %%%%% Vision med OpenCV-Python %%%%%
+\newpage
 \subsection{Vision med OpenCV-Python}
 Vision funktionerne, \texttt{find\_brick\_centers}, \texttt{get\_from\_webcam},\newline \texttt{extract\_single\_color\_range}, \texttt{threshold\_image}, \texttt{contours} og \texttt{get\_centers}, er udviklet i Python med det formål at identificere klodsernes placering.
 Dette gøres ved at finde centrum af de klodser, der identificeres ved brug af en oprettet maske.
@@ -110,13 +166,6 @@ Gul		&	21-38		&	76-255	&	102-255	\\
 \caption{Grænseværdier konverteret fra MATLAB range til OpenCV-Python range og afrundet til heltal.}
 \end{table}
 
-\begin{wrapfigure}{r}{0.3\textwidth}
-  \begin{center}
-    \includegraphics[width=0.23\textwidth]{figurer/ImagesFromVision}
-  \end{center}
-  \caption{Illustration af vision algoritmen}\label{fig:ImagesFromVision}
-\end{wrapfigure}
-
 Derudover skal H grænseværdierne for den røde klods deles op i to intervaller; 0-14 og 161-179.
 
 Efter at have defineret grænseværdierne kaldes metoden \texttt{get\_from\_webcam}. Denne indlæser et billede fra kameraet og beskærer det, så kun det relevante område vises på billedet.
@@ -128,8 +177,17 @@ Efter konverteringen kaldes funktionerne\newline \texttt{extract\_single\_color\
 Maksen oprettes ved brug af OpenCV funktionen \texttt{cv2.inRange}.
 Funktionen returnerer billedet, hvor kun farver inden for den specificerede grænseværdi er synlige.
 
-Funktionen \texttt{threshold\_image} thresholder \textbf{(er det et fordansket ord?)} billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
-Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en \textit{close}, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Morphologi} for en beskrivelse af princippet i de morfologiske operationer.
+Funktionen \texttt{threshold\_image} thresholder billedet med OpenCV funktionen \texttt{cv2.threshold} og udfører morfologiske operationer på det.
+Den udfører en \textit{dialate} med OpenCV funktionen \texttt{cv2.dilate} for at lukke små huller og en
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+  \begin{center}
+    \includegraphics[width=0.23\textwidth]{figurer/ImagesFromVision}
+  \end{center}
+  \caption{Illustration af vision algoritmen}\label{fig:ImagesFromVision}
+\end{wrapfigure}
+
+\textit{close}, med OpenCV funktionen \texttt{cv2.morphologyEx}, for at lukke evt. brudte kanter, se bilag \ref{app:VisionPrincipper} afsnit \vref{sec:Morphologi} for en beskrivelse af princippet i de morfologiske operationer.
 
 \texttt{contours} konverterer det returnerede billede fra\newline \texttt{threshold\_image} til et gråskalabillede ved brug af OpenCV funktionen \texttt{cv2.cvtColor}.
 Derefter identificerer den konturer på billedet ved brug af OpenCV funktionen \texttt{cv2.findContours}.
@@ -141,9 +199,6 @@ Centrum koordinaterne (række og kolonne i billedet) for momentet findes og retu
 
 Da koordinatsættet, returneret fra \texttt{get\_centers}, er i pixels, en række og en kolonne i billedet, skal det konverteres til koordinater i CrustCrawlerens koordinatsystem.
 Se figur \vref{fig:ConvertCoordinate} for en illustration af de to koordinatsystemer.
-
-\figur{0.75}{ConvertCoordinate.pdf}{CrustCrawlerens koordinatsystem i forhold til række og kolonne koordinatsystemet for billedet.}{fig:ConvertCoordinate}
-
 For at identificere, hvor mange pixels, der er pr. enhed i CrustCrawlerens koordinatsystem, udføres en test, hvor klodser sættes i et kendte punkter i CrustCrawlerens koordinatsystem.
 Derefter tages et billede med kameraet og klodsernes koordinater i pixels identificeres via. vision algoritmerne.
 Se bilag \vref{app:KoordinatsystemKonvertering} for den fulde test.
@@ -151,54 +206,22 @@ Testen viste, at der var 9 pixels pr. enhed i CrustCrawlerens koordinatsystem.
 \textit{x\_robot} aksen og \textit{row} aksen vender hver sin vej og har origo i hver sit hjørne af billedet.
 På grund af dette trækkes pixel-koordinatets rækkeværdi fra højden af billedet i pixels før det divideres med de 9 pixels pr. enhed for at vende aksen om.
 Dermed returnerer \texttt{find\_brick\_centers} centrum i CrustCrawlerens koordinatsystem for alle klodser identificeret af vision aloritmerne.
-
-%%%%% Vision node %%%%%
-\subsection{Vision node}
-For at Robotten kan vide, hvor klodserne er, skal den have et x,y koordinat på klodsernes centrum.
-Derfor er en ROS node publisher som publishere koordinaterne konstrueret.
-Nedenunder ses kode for ROS noden som publishere koordinaterne \newline
-\begin{lstlisting}[language=python]
-pub = rospy.Publisher('Coordinates', String, queue_size=10)
-rospy.init_node('VisionPublisher', anonymous=True)
-rate = rospy.Rate(1) # 1hz
-\end{lstlisting}
-Først bliver en ROS publisher lavet, på topic'et "Coordinates" og data typen på messagen er string.
-Derefter bliver en ROS node lavet med navnet "VisionPublisher". anonymous=true betyder at der kan ikke være flere med sammen navn.
-rate blivere initialiseret til 1 hz, dvs at der bliver publisheret hvert sekund. \newline
-\begin{lstlisting}[language=python]
-while not rospy.is_shutdown():
-        try:
-            bricks = find_brick_centers()
-            
-            if len(bricks) != 0:        
-                coords_str = "%f,%f"%(bricks[0], bricks[1])
-            else:
-                coords_str = "%f,%f"%(0, 0)          
-            pub.publish(coords_str)
-            
-            print("Test af coords_str")
-            print(coords_str)
-        except:
-            print "Error"
-        rate.sleep()
-\end{lstlisting}
-Funktionen \texttt{find\_brick\_centers()} kaldes, \textbf{ogd!!} returnet x,y kooridnater på alle klodserne, der er i arbejdsområdet, i en liste.
-Derefter bliver \textbf{første og anden pladsen!!!! kunne godt omskrives?} i listen, som er x og y koordinater på den første klods, lagt ind i en string og derefter publisheret.
-Hvis der ikke er nogle klodser i arbejdsområdet bliver der sendt en tom string.
+\figur{0.8}{ConvertCoordinate}{CrustCrawlerens koordinatsystem i forhold til række og kolonne koordinatsystemet for billedet.}{fig:ConvertCoordinate}
 
 %%%%%%%%%% Robot system %%%%%%%%%%
 \newpage
 \section{Robot system}
-Skriv indledende tekst... - er der nogen som har tænkt over dette eller? 
+%%%%%%%%%% Links og joints %%%%%%%%%%
 \subsection{Links og joints}
-Robotten består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
+CrustCrawleren består af en række links og joints. Disse er bestemt vha. opmåling af selve robotten. 
 
 \figur{1}{crustCrawlerLinks.png}{Figur over links på crustcrawler}{fig:crustCrawlerLinks}
 
-Som det ses på figur \ref{fig:crustCrawlerLinks}, består robotten af fire links. Robottens base roterer. Derudover kan to led på robottens arm bøje. Slutteligt kan grabberen rotere. Det kan deraf udledes, at robotten består af fire revolute joints og dermed besidder fire frihedsgrader. Dette medfører visse begrænsninger i robottens arbejdsområde, da seks frihedsgrader er nødvendige for at opnå fuld frihed inden for arbejdsområdet.
+Som det ses på figur \ref{fig:crustCrawlerLinks}, består CrustCrawleren af fire links. CrustCrawlerens base roterer. Derudover kan to led på CrustCrawlerens arm bøje. Slutteligt kan grabberen rotere. Det kan deraf udledes, at CrustCrawleren består af fire revolute joints og dermed besidder fire frihedsgrader. Dette medfører visse begrænsninger i CrustCrawlerens arbejdsområde, da seks frihedsgrader er nødvendige for at opnå fuld frihed inden for arbejdsområdet.
 
+%%%%%%%%%% Coordinate frames %%%%%%%%%%
 \subsection{Coordinate frames}
-Til at bestemme koordinatrammerne for robotten, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for robotten. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
+Til at bestemme koordinatrammerne for CrustCrawleren, er Denavit-Hartenberg konventionen anvendt til at udlede DH parametre for CrustCrawleren, se bilag \textbf{INDSÆT BILAG} for princippet bag Denavit-Hartenberg konventionen. Dette indebærer at konstruere et koordinatsæt for hver joint oven på hinanden. 
 
 \figur{0.60}{crustCrawlerCoordinateFrames.png}{Figur over coordinate frames på crustcrawler}{fig:crustCrawlerLinks}
 
@@ -214,41 +237,49 @@ Links	&	$\theta$ (deg) 	&	d(cm)		&	a(cm)		& 	$\alpha$ (deg)\\
 3		&	$\theta$3			&	0			&	0			&	90\\
 4		&	$\theta$4			&	20		&	0			&	0\\
 \end{tabular}	
-\caption{DH parametre for CrustCrawler robotten.}
+\caption{DH parametre for CrustCrawleren.}
 \end{table}
 
-For dybere forklaring af Denavit-Hartenberg parametre, se bilag, side \textbf{INDSÆT BILAG}
-
+%%%%%%%%%% Invers kinematik %%%%%%%%%%
 \subsection{Invers kinematik}
-Robotten skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal en matematisk konventering fra koordinatsæt til vinkler foretages.\newline
-Først skal længderne af robottens links bestemmes:
-\figur{0.3}{DimRobot}{Længder på robottens links}{fig:DimRobot}
-Vinklen i joint 1(q1) beregnes ud fra x og y koordinatet:
-\figur{0.2}{q1}{Formel for q1}{fig:q1}
-Derefter kan vinklen i joint 2(q2) og joint3 (q3) bestemmes. Først skal q3 bestemmes før at q2 kan findes, da den bruges i udregningen.
-\figur{0.5}{q2q3}{Formel for q2 og q3}{fig:q2q3}
+CrustCrawleren skal kunne bevæge sig hen til en given position ud fra et koordinatsæt. Da motorerne på crustcrawleren styres ud fra vinkler skal en matematisk konventering fra koordinatsæt til vinkler foretages.\newline
+Først skal længderne af CrustCrawlerens links bestemmes:
+\begin{align}
+	d_1&=16.8	&	a_1&=0\\
+	d_4&=20		&	a_2&=17.31
+\end{align}
+
+Vinklen i joint 1 ($q_1$) beregnes ud fra x og y koordinatet:
+\begin{equation}
+	q_1=atan\left(\frac{y}{x}\right)
+\end{equation}
+Derefter kan vinklen i joint 2 ($q_2$) og joint 3 ($q_3$) bestemmes.
+Først skal $q_3$ bestemmes før at $q_2$ kan findes, da den bruges i udregningen.
+\begin{gather}
+	r_2=\left(x-a_1\cdot cos(q_1)\right)^2+\left(y-a_1\cdot sin(q_1)\right)^2\\
+	s=z-d_1\\
+	d=\frac{r_2+s^2-a_2^2-d_4^2}{2\cdot a_2\cdot d_4}\\
+	q_3=atan\left(\frac{-\sqrt{1-d^2}}{d}\right)\\
+	q_2=atan\left(\frac{s}{\sqrt{r_2}-atan\left(\frac{d_4\cdot sin(q_3)}{a_2+d_4\cdot cos(q_3)}\right)-\frac{\pi}{2}}\right)
+\end{gather}
 Overstående formler er blevet implementeret i python kode se \vref{sec:InvRobot}
 
+%%%%%%%%%% RobotExecute %%%%%%%%%%
 \subsection{RobotExecute}
-Klassen \texttt{RobotExecute()} håndterer konstruktionen og afsendelsen af kommandoer til robotten. Det er denne klasse, der står for at igangsætte robottens bevægelser. Dette gøres vha. ROSPY bibliotekets \texttt{SimpleActionClient}.
+Klassen \texttt{RobotExecute} håndterer konstruktionen og afsendelsen af kommandoer til CrustCrawleren. Det er denne klasse, der står for at igangsætte CrustCrawlerens bevægelser. Dette gøres vha. ROSPY bibliotekets \texttt{SimpleActionClient}.
 
 Først opbygges et array af navnene på de enkelte led. Derefter opbygges et array der indeholder de enkelte leds position bestående af de tre vinkler, et rotationsparameter samt et grabber pamameter.
 
 	Der itereres gennem dette array. For hver led position oprettes et \texttt{JointTrajectoryPoint} objekt.  Dette består af det enkelte leds position, en velocity samt tiden, der går fra start af kommandoen.
 	
-Derefter lægges disse positioner ind i et \texttt{joinTrajectory}objekt, der udover disse indeholder navnene, der beskriver de enkelte joints).
-Selve kommandoen til robotten består af et goal, der indeholder joinTrajectory objektet samt en tidstolerance.
-Dette mål sendes afsted til robotten, hvorefter der afventes resultat. 
-
-\textbf{Lidt mere gennemgang af hvad koden gør?}
-\textbf{MANGLER KODE INDSÆTTELSE}
-\textbf{Hvem laver dette? }
-
+Derefter lægges disse positioner ind i et \texttt{joinTrajectory} objekt, der udover disse indeholder navnene, der beskriver de enkelte joints).
+Selve kommandoen til CrustCrawleren består af et goal, der indeholder joinTrajectory objektet samt en tidstolerance.
+Dette mål sendes afsted til CrustCrawleren, hvorefter der afventes resultat. 
 
 %%%%%%%%%%%%%% Section Pressure Sensor %%%%%%%%%%%%%%%%%
-\newpage
+%\newpage
 \section{Pressure sensor system}
-For at kunne identificere, hvorvidt robotten har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på robottens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvendt. 
+For at kunne identificere, hvorvidt CrustCrawleren har grebet fat om en klods, er en tryksensor blevet anvendt. Denne sidder yderst på CrustCrawlerens griber. Til at tolke målingerne fra sensoren er en Arduino microcontroller blevet anvendt. Til kommunikation mellem Arduinoen og resten af systemet, er Rosserial bibliotiket blevet anvendt. 
 
 \subsection{FSR 402 - Tryksensor}
 Til måling af tryk bruges en Interlink FSR 402 Short. Denne fungerer ved at ændre modstanden over sensoren i forhold til det tryk, der lægges på den. Dette er en meget simpel sensor at anvende, da der udover sensoren blot skal anvendes en enkelt pull-down modstand. 
