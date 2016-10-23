@@ -7,6 +7,31 @@ På figur \ref{fig:Demonstration_For} er en række klodser med varierende farver
 \figur{0.45}{Demonstration_For.pdf}{Testopstilling før test}{fig:Demonstration_For}
 
 Efter udførelse af spejlingsprogrammet ses det, at klodserne nu ligger på den anden side i spejlvendt mønster, se figur \ref{fig:Demonstration_Efter}.
-
 \figur{0.45}{Demonstration_Efter.pdf}{Testopstilling efter test}{fig:Demonstration_Efter}
-\figur{1}{testbeskrivelse_figur}{Systemtest beskrivelse}{fig:testbeskrivelse_figur}
+
+Følgende tabel er en beskrivelse af den visuelle test samt dens resultater:
+\begin{longtable}{p{4.5cm} | p{4.5cm} | p{4.5cm}}
+Test beskrivelse	&	Forventet resultat			&	Resultat	\\
+\hline
+\textbf{Grib objekter test:}\newline
+Robotten skal kunne gribe om de klodser, der er placeret på arbejdsområdet.
+& \newline Robotten griber om klodserne i arbejdsområdet.
+& \textbf{GODKENDT}\newline Den visuelle test viser at robotten kan gribe om klodserne.\\
+\hline
+\textbf{Flyt objekter test}:\newline
+Robotten skal kunne flytte på klodsen, den har grebet, til dens spejlede placering.
+& \newline Robotten flytter klodsen, den har grebet, til dens spejlede placering.
+& \textbf{GODKENDT}\newline Den visuelle test viser at robotten kan flytte klodsen, den har grebet, til den spejlede placering.\\
+\hline
+\textbf{Håndryk}:\newline
+1. Efter at have flyttet den sidste klods i arbejdsområdet skal robotten gå til håndtryksposition.\newline
+2. Robotten skal vente på at få et ''håndtryk''.\newline
+3. Robotten skal gå til slutposition efter ''håndtryk''.
+&\newline  1. Robotten flytter den sidste klods og går til håndtryksposition.\newline
+2. Robotten venter på at få et ''håndtryk''.\newline
+3. Robotten går til slutposition efter ''håndtryk''.
+& \textbf{GODKENDT}\newline 
+1. Den visuelle test viser at robotten går til håndtryksposition efter at have flyttet den sidste klods i arbejdsområdet.
+2. Den visuelle test viser at robotten venter på at få et ''håndtryk''.
+3. Den visuelle test viser at robotten går til slutposition efter ''håndtryk''.
+\end{longtable}
