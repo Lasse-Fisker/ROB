@@ -1,0 +1,35 @@
+\chapter{Denavit Hartenberg}\label{app:DenavitHartenberg}
+
+%%%%%%%%%% Coordinate frames %%%%%%%%%%
+Denavit Hartenberg konventionen beskriver en fast fremgangsmåde til at tildele koordinatrammer til en robotarms led, og derefter udlede dertilhørende Denavit Hartenberg parametre.
+
+Der foreligger en fast procedure til udledning af DH parametre. 
+Først tildeles der koordinatrammer til robottens led. Nedenstående illustrerer, hvordan dette kan se ud.
+
+\figur{0.50}{DenavitHartenbergFrames.png}{Tildeling af koordinatrammer til robotarm.}{fig:DHFrames}
+
+Rammer tildeles efter visse regler. 
+
+Der startes fra baserammen. Z aksen lægges i leddets rotation. Ved base rammen er x aksens placering vilkårlig. Y aksen lægges således, at koordinatsættes overholder højrehåndsreglen. 
+	
+For efterfølgende led placeres z aksen ligeledes i leddets rotation. X aksen er her bestemt af, at den skal ligge ortogonalt på foregående leds z akse. Y aksen placeres som før således at højrehåndsreglen overholdes.
+
+Efter tildeling af koordinatrammerne kan Denavit Hartenberg parametrene udledes. Disse består af fire parametre.
+	 
+\begin{itemize}
+\item d - dybden langs det forelående leds z akse.
+\item $\theta$ - rotationen omkring det foregående leds z akse fra dette x akse, til det nye leds x akse. 
+\item a - længden mellem det foregående leds z akse og det nye leds z akse langs dettes x akse.
+\item $\alpha$ - rotationen omkring det nye leds x akse for at bringe z aksen til den ønskede orientering.
+\end{itemize}
+
+Figur \ref{fig:DHParams} viser et eksempel på udledning af Denavit Hartenberg parametre. 
+
+\figur{0.50}{DenavitHartenbergParams.png}{Udledning af Denavit Hartenberg parametre.}{fig:DHParams}
+
+
+
+
+
+
+
