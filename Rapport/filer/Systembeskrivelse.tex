@@ -6,14 +6,14 @@ Systemet vil derefter påbegynde spejlingen af det fremlagte mønster, blot spej
 
 Ved færdig spejling vil CrustCrawleren bevæge sig til en neutral position og påbegynde afslutningssignalet, et håndtryk.
 CrustCrawleren bevæger sig til midten af dens arbejdsareal og afventer, at brugeren giver den hånden.
-Robotten vil derefter returnere til neutral position.
+CrustCrawleren vil derefter returnere til neutral position.
 \figur{1}{Opgavebeskrivelse_Robotfigur}{Systemillustration}{fig:Systemillustration}
 \newpage
 
 %%%%%%%%%% Hardware %%%%%%%%%%
 \section{Hardware}\label{sec:Hardware}
-Systemet indeholder Vision genkendelse i form af et fastmonteret webcam fra D-link, der anvendes til at analysere det eksisterende mønster og derefter udregne de påkrævede koordinater, som robotten skal navigere til. 
-Udover dette anvendes en FSR\textsuperscript{\textregistered} Model 402 Short Tail tryksensor, til at detektere, hvorvidt et objekt er holdt fast af robotten eller ej, ved at måle det tryk, som denne udøver på den givne overflade.
+Systemet indeholder Vision genkendelse i form af et fastmonteret webcam fra D-link, der anvendes til at analysere det eksisterende mønster og derefter udregne de påkrævede koordinater, som CrustCrawleren skal navigere til. 
+Udover dette anvendes en FSR\textsuperscript{\textregistered} Model 402 Short Tail tryksensor, til at detektere, hvorvidt et objekt er holdt fast af CrustCrawleren eller ej, ved at måle det tryk, som denne udøver på den givne overflade.
 Tryksensoren er tilsluttet en Arduino Uno microcontoller.
 
 CrustCrawlerens eksisterende aktuator anvendes til at manipulere de påkrævede objekter.
@@ -22,6 +22,6 @@ CrustCrawlerens eksisterende aktuator anvendes til at manipulere de påkrævede 
 \section{Software}\label{sec:Software}
 Til programmering af Arduino microcontrolleren anvendes et subset af C samt Rosserial biblioteket.
 Dette gøres gennem Arduino IDE'et.
-Programmet til at kontrollere robotten er skrevet i Python, hvor ROSPY biblioteket er blevet brugt til at styre frameworket ROS.
+Programmet til at kontrollere CrustCrawleren er skrevet i Python, hvor ROSPY biblioteket er blevet brugt til at styre frameworket ROS.
 Programmet afvikles fra et Linux miljø.
 Til programmering af Vision systemet, er dele af OpenCV-Python biblioteket blevet anvendt. 
